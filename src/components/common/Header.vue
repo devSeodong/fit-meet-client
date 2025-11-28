@@ -1,5 +1,5 @@
 <template>
-  <div id="headerContainer">헤더</div>
+  <div id="headerContainer" class="text-white p-4 text-xl font-bold bg-red-500">헤더</div>
 </template>
 
 <script setup>
@@ -10,10 +10,7 @@
 defineOptions({
   name: "AppHeader",
 });
+import "../../style.css";
 </script>
 
-<style scoped>
-#headerContainer {
-  background-color: blue;
-}
-</style>
+<style scoped></style>
