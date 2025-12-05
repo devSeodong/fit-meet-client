@@ -108,7 +108,7 @@
     </div>
 
     <!-- 전체 폼 메시지 -->
-    <p
+    <!-- <p
       class="text-sm mt-[-10px]"
       :class="{
         'text-red-600': formMsgStatus === 'error',
@@ -116,7 +116,7 @@
       }"
     >
       {{ formMsg }}
-    </p>
+    </p> -->
 
     <!-- 회원가입 버튼 -->
     <button
@@ -125,6 +125,15 @@
     >
       회원가입
     </button>
+
+    <div class="mt-4 md:hidden text-center">
+      <RouterLink
+        to="/auth/login"
+        class="text-sm text-[#68b478] hover:underline"
+      >
+        이미 계정이 있으신가요? 로그인하기
+      </RouterLink>
+    </div>
   </form>
 </template>
 
@@ -168,6 +177,16 @@ watch(email, () => {
 
 // ⭐ 이메일 중복 체크
 const checkEmail = async () => {
+  const trimmedEmail = email.value.trim();
+
+  // 🔥 공백이거나 빈 문자열이면 서버에 요청 보내지 않도록 막기
+  if (!trimmedEmail) {
+    emailStatus.value = 'error';
+    emailMsg.value = '이메일을 입력해주세요!';
+    emailInput.value?.focus();
+    return;
+  }
+
   const result = await store.checkEmail(email.value);
 
   console.log('이메일 중복확인:: ', result);
@@ -217,142 +236,3 @@ const submitSignup = async () => {
   }
 };
 </script>
-
-<!-- <script setup>
-import { ref, computed, watch } from 'vue';
-import axios from 'axios';
-import router from '@/router';
-
-const email = ref('');
-const userName = ref('');
-const nickname = ref('');
-const password = ref('');
-const pwCheck = ref('');
-
-const emailInput = ref(null);
-const passwordInput = ref(null);
-
-const emailStatus = ref('');
-const pwStatus = ref('');
-const formMsgStatus = ref('');
-
-const formMsg = ref('');
-const emailMsg = ref('');
-
-// 중복 체크 여부
-const isEmailChecked = ref(false);
-
-// 비밀번호 메시지
-const passwordMsg = computed(() => {
-  if (!password.value || !pwCheck.value) return '';
-
-  if (password.value === pwCheck.value) {
-    pwStatus.value = 'success';
-    return '비밀번호가 일치합니다.';
-  } else {
-    pwStatus.value = 'error';
-    return '비밀번호가 일치하지 않습니다.';
-  }
-});
-
-// 비밀번호 일치 여부
-const isCheckedPw = computed(() => {
-  return password.value && pwCheck.value && password.value === pwCheck.value;
-});
-
-// 이메일 변경 시 중복확인 초기화
-watch(email, () => {
-  isEmailChecked.value = false;
-  emailMsg.value = '';
-});
-
-// 이메일 중복확인 API
-const checkEmail = async () => {
-  if (!email.value) {
-    emailMsg.value = '이메일을 입력해주세요!';
-    emailStatus.value = 'error';
-    emailInput.value?.focus();
-    return;
-  }
-
-  try {
-    const res = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/auth/email-info`,
-      {
-        params: { email: email.value },
-      },
-    );
-    // console.log('성공일땐 뭐나오냐::', res);
-    if (res.status === 200) {
-      emailMsg.value = '사용 가능한 이메일입니다 :)';
-      emailStatus.value = 'success';
-      isEmailChecked.value = true;
-    } else {
-      emailMsg.value = res.data.msg;
-      emailStatus.value = 'error';
-      isEmailChecked.value = false;
-    }
-  } catch (err) {
-    if (err.response) {
-      // console.log('에러코드가 뭐야:: ', err.response);
-      const status = err.response.status;
-      const errMsg = err.response.data.msg;
-      if (status === 400) {
-        emailStatus.value = 'error';
-        emailMsg.value = errMsg;
-      } else {
-        emailStatus.value = 'error';
-        emailMsg = '이메일 확인 중 오류가 발생했습니다';
-      }
-    } else {
-      emailStatus.value = 'error';
-      emailMsg.value = '서버 오류가 발생했습니다.';
-    }
-  }
-};
-
-// 회원가입 요청
-const submitSignup = async () => {
-  if (!isEmailChecked.value) {
-    emailMsg.value = '이메일 중복확인을 해주세요!';
-    emailStatus.value = 'error';
-    emailInput.value?.focus();
-    return;
-  }
-
-  if (!isCheckedPw.value) {
-    alert('비밀번호가 일치하지 않습니다!');
-    passwordInput.value?.focus();
-    return;
-  }
-
-  try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/auth/signup`,
-      {
-        email: email.value,
-        password: password.value,
-        name: userName.value,
-        nickname: nickname.value,
-      },
-    );
-
-    if (res.data.code === 0) {
-      alert('회원가입 성공!');
-
-      email.value = '';
-      nickname.value = '';
-      password.value = '';
-      pwCheck.value = '';
-
-      isEmailChecked.value = false;
-
-      router.push({ name: 'login' });
-    } else {
-      alert('회원가입 실패: ' + res.data.message);
-    }
-  } catch (err) {
-    alert('서버 오류가 발생했습니다.');
-  }
-};
-</script> -->

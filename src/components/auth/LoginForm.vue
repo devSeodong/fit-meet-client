@@ -41,6 +41,15 @@
     >
       로그인
     </button>
+
+    <div class="mt-4 md:hidden text-center">
+      <RouterLink
+        to="/auth/signup"
+        class="text-sm text-[#68b478] hover:underline"
+      >
+        아직 회원가입이 안되셨나요?
+      </RouterLink>
+    </div>
   </form>
 </template>
 <script setup>
@@ -100,96 +109,4 @@ const submitLogin = async () => {
 };
 </script>
 
-<!-- <script setup>
-import { ref, computed } from 'vue';
-import axios from 'axios';
-import router from '@/router';
-
-const email = ref('');
-const password = ref('');
-
-const emailInput = ref(null);
-const passwordInput = ref(null);
-
-const emailMsg = ref('');
-const passwordMsg = ref('');
-// const passwordMsg = computed(() => {
-//   return password.value ? "비밀번호 입력 완료" : "";
-// });
-
-const submitLogin = async () => {
-  if (!email.value) {
-    emailMsg.value = '이메일을 입력해주세요!';
-    emailInput.value?.focus();
-    return;
-  }
-
-  if (!password.value) {
-    alert('비밀번호를 입력해주세요!');
-    passwordInput.value?.focus();
-    return;
-  }
-
-  try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/auth/login`,
-      {
-        email: email.value,
-        password: password.value,
-      },
-    );
-
-    if (res.data.code === 0) {
-      // 로그인 성공
-      email.value = '';
-      password.value = '';
-      emailMsg.value = '';
-      alert('로그인 성공!');
-      router.push({ name: 'home' });
-    } else {
-      // 서버가 실패 원인 전달
-      if (res.data.message === 'email') {
-        emailMsg.value = '존재하지 않는 이메일입니다.';
-        emailInput.value?.focus();
-      } else if (res.data.message === 'password') {
-        alert('비밀번호가 일치하지 않습니다.');
-        passwordInput.value?.focus();
-      } else {
-        alert('로그인 실패: ' + res.data.message);
-      }
-    }
-  } catch (err) {
-    emailMsg.value = '서버 오류가 발생했습니다';
-    emailInput.value?.focus();
-  }
-};
-</script> -->
-
-<style scoped>
-/* .container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 400px;
-  margin: 50px auto;
-}
-
-input {
-  padding: 8px;
-  font-size: 16px;
-}
-
-button {
-  padding: 10px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#checkEmail {
-  color: red;
-}
-
-#checkPassword {
-  color: green;
-} */
-</style>
+<style scoped></style>
