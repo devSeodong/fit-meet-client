@@ -40,9 +40,9 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useUserStore } from '@/stores/User';
+import { useAuthStore } from '@/stores/Auth';
 
-const store = useUserStore();
+const store = useAuthStore();
 const user = store.userInfo;
 
 const visible = ref(false);

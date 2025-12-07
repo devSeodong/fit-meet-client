@@ -139,10 +139,10 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { useUserStore } from '@/stores/User';
+import { useAuthStore } from '@/stores/Auth';
 import router from '@/router';
 
-const store = useUserStore();
+const store = useAuthStore();
 
 const email = ref('');
 const userName = ref('');

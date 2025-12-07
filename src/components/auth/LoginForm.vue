@@ -54,11 +54,11 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-import { useUserStore } from '@/stores/User';
+import { useAuthStore } from '@/stores/Auth';
 import router from '@/router';
 // import { nextTick } from 'vue';
 
-const store = useUserStore();
+const store = useAuthStore();
 
 const email = ref('');
 const password = ref('');

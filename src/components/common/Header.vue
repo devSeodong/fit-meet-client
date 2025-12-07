@@ -4,7 +4,7 @@
       <div class="hidden md:block md:col-span-1"></div>
 
       <div class="col-span-12 md:col-span-10 flex justify-between items-center">
-        <div class="text-2xl font-bold text-blue-600 select-none">FITMIT</div>
+        <div class="text-2xl font-bold text-blue-600 select-none">FIT-MEET</div>
 
         <!-- 데스크탑 네비 -->
         <nav
@@ -21,7 +21,7 @@
           >
 
           <!-- 로그인/회원가입 or 유저 드롭다운 -->
-          <div class="flex items-center gap-4 ml-4">
+          <div class="flex items-center gap-4 ml-16">
             <template v-if="!store.isLoggedIn">
               <RouterLink to="/auth/login" class="hover:text-blue-600"
                 >로그인</RouterLink
@@ -60,11 +60,11 @@
 <script setup>
 import { ref } from 'vue';
 import { Bars3Icon } from '@heroicons/vue/24/outline';
-import { useUserStore } from '@/stores/User';
+import { useAuthStore } from '@/stores/Auth';
 import UserDropdown from '@/components/common/UserDropdown.vue';
 import MobileSidebar from '@/components/common/MobileSidebar.vue';
 
-const store = useUserStore();
+const store = useAuthStore();
 const open = ref(false);
 
 const closeMenu = () => (open.value = false);

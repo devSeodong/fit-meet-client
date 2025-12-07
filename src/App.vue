@@ -1,14 +1,14 @@
 <script setup>
 import AppHeader from '@/components/common/Header.vue';
 import { onMounted } from 'vue';
-import { useUserStore } from '@/stores/User';
+import { useAuthStore } from '@/stores/Auth';
 
-const store = useUserStore();
+const store = useAuthStore();
 
-onMounted(async () => {
-  // 쿠키 기반 로그인 복구
-  await store.fetchUserInfo();
-});
+// onMounted(async () => {
+//   // 쿠키 기반 로그인 복구
+//   await store.fetchUserInfo();
+// });
 </script>
 
 <template>

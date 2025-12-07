@@ -21,13 +21,14 @@
     </nav>
 
     <!-- 로그아웃 버튼 (하단 고정 바로 위) -->
-    <button
+    <!-- <button
       v-if="store.isLoggedIn"
       @click="handleLogout"
       class="absolute bottom-22 right-10 text-sm text-gray-500"
     >
+
       로그아웃
-    </button>
+    </button> -->
 
     <!-- 하단 프로필 영역 (완전 고정) -->
     <div
@@ -39,14 +40,23 @@
           :src="store.userInfo.profileImageUrl"
           class="w-10 h-10 rounded-full object-cover"
         />
-        <span class="text-base text-gray-700 font-medium">
-          {{ store.userInfo.nickname }}님 환영합니다!
-        </span>
+        <div class="flex flex-col">
+          <span class="text-base text-gray-700 font-medium"> 환영합니다! </span>
+          <span class="text-base text-gray-700 font-medium">
+            {{ store.userInfo.nickname }}님
+          </span>
+        </div>
       </div>
-
-      <RouterLink to="/mypage" @click="close">
-        <Cog6ToothIcon class="w-5 h-5 text-gray-600" />
-      </RouterLink>
+      <div class="flex items-center gap-2">
+        <ArrowLeftStartOnRectangleIcon
+          v-if="store.isLoggedIn"
+          class="w-6 h-6 text-gray-600 cursor-pointer"
+          @click="handleLogout"
+        />
+        <RouterLink to="/mypage" @click="close">
+          <Cog6ToothIcon class="w-6 h-6 text-gray-600" />
+        </RouterLink>
+      </div>
     </div>
 
     <!-- 로그인 & 회원가입 (로그아웃이 아닐 때) -->
@@ -61,15 +71,19 @@
 </template>
 
 <script setup>
-import { XMarkIcon, Cog6ToothIcon } from '@heroicons/vue/24/outline';
-import { useUserStore } from '@/stores/User';
+import {
+  XMarkIcon,
+  Cog6ToothIcon,
+  ArrowLeftStartOnRectangleIcon,
+} from '@heroicons/vue/24/outline';
+import { useAuthStore } from '@/stores/Auth';
 
 const props = defineProps({
   open: Boolean,
   close: Function,
 });
 
-const store = useUserStore();
+const store = useAuthStore();
 
 const handleLogout = () => {
   store.logout();
