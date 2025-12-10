@@ -9,11 +9,20 @@ import AuthLayout from '@/layouts/AuthLayout.vue';
 import UserHealthInfoPage from '@/pages/UserHealthInfoPage.vue';
 
 import { useAuthStore } from '@/stores/Auth';
+import HomePage from '@/pages/HomePage.vue';
+import PasswordResetPage from '@/pages/PasswordResetPage.vue';
+// import DashBoardPage from '@/pages/DashBoardPage.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
+    component: HomePage,
+    children: [
+      {
+        path: '',
+      },
+    ],
   },
   {
     path: '/auth',
@@ -30,6 +39,11 @@ const routes = [
         name: 'signup',
         component: SignupPage,
       },
+      {
+        path: 'password-reset',
+        name: 'passwordReset',
+        component: PasswordResetPage,
+      },
     ],
   },
   {
@@ -39,9 +53,14 @@ const routes = [
   },
   {
     path: '/user/profile-info',
-    name: 'user-health-info',
+    name: 'userHealthInfo',
     component: UserHealthInfoPage,
   },
+  // {
+  //   path: '/dashBoard',
+  //   name: 'dashBoard',
+  //   component: DashBoardPage,
+  // },
 ];
 
 const router = createRouter({

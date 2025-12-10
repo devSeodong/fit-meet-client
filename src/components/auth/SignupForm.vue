@@ -11,7 +11,7 @@
 9. 폼데이터 전송 (이메일중복 확인, 회원가입)
 -->
 <template>
-  <form @submit.stop.prevent="submitSignup" class="flex flex-col gap-7 my-6">
+  <form @submit.stop.prevent="submitSignup" class="flex flex-col gap-7 mt-6">
     <!-- 이메일 -->
     <div class="flex flex-col">
       <label class="text-base font-semibold text-[#8A8F6E]">이메일</label>
@@ -72,6 +72,10 @@
     <!-- 비밀번호 -->
     <div class="flex flex-col">
       <label class="text-base font-semibold text-[#8A8F6E]">비밀번호</label>
+      <p class="text-[10px] text-gray-600">
+        비밀번호는 8~20자이며, 영문자ㆍ숫자ㆍ특수문자를 각각 최소 1자 이상
+        포함해야 합니다.
+      </p>
 
       <input
         type="password"
@@ -80,6 +84,16 @@
         placeholder="비밀번호를 입력하세요"
         class="w-full mt-2 px-4 py-3 rounded-xl border border-[#D3D7B5] bg-white focus:ring-2 focus:ring-[#D3A373] outline-none transition"
       />
+      <!-- 전체 폼 메시지 -->
+      <p
+        class="text-sm mt-1"
+        :class="{
+          'text-red-600': formMsgStatus === 'error',
+          'text-green-600': formMsgStatus === 'success',
+        }"
+      >
+        {{ formMsg }}
+      </p>
     </div>
 
     <!-- 비밀번호 확인 -->
@@ -107,17 +121,6 @@
       </p>
     </div>
 
-    <!-- 전체 폼 메시지 -->
-    <!-- <p
-      class="text-sm mt-[-10px]"
-      :class="{
-        'text-red-600': formMsgStatus === 'error',
-        'text-green-600': formMsgStatus === 'success',
-      }"
-    >
-      {{ formMsg }}
-    </p> -->
-
     <!-- 회원가입 버튼 -->
     <button
       type="submit"
@@ -126,7 +129,7 @@
       회원가입
     </button>
 
-    <div class="mt-4 md:hidden text-center">
+    <div class="md:hidden text-center">
       <RouterLink
         to="/auth/login"
         class="text-sm text-[#68b478] hover:underline"
@@ -149,6 +152,13 @@ const userName = ref('');
 const nickname = ref('');
 const password = ref('');
 const pwCheck = ref('');
+const formMsg = ref('');
+
+const formMsgStatus = ref('');
+watch([password, pwCheck], () => {
+  formMsg.value = '';
+  formMsgStatus.value = '';
+});
 
 const emailStatus = ref('');
 const emailMsg = ref('');
@@ -161,6 +171,7 @@ const passwordInput = ref(null);
 const pwStatus = ref('');
 const passwordMsg = computed(() => {
   if (!password.value || !pwCheck.value) return '';
+  if (formMsgStatus.value === 'error') return '';
   if (password.value === pwCheck.value) {
     pwStatus.value = 'success';
     return '비밀번호가 일치합니다.';
@@ -228,10 +239,17 @@ const submitSignup = async () => {
     if (res.code === 0) {
       alert('회원가입 성공!');
       router.push({ name: 'login' });
-    } else {
-      alert('회원가입 실패: ' + res.message);
+      // router.push({ name: 'userHealthInfo' });
     }
   } catch (err) {
+    // 여기서 err는 서버가 보낸 data 자체
+    if (err.code === 1012) {
+      formMsgStatus.value = 'error';
+      formMsg.value = err.msg;
+      passwordInput.value?.focus();
+      return;
+    }
+
     alert('서버 오류가 발생했습니다.');
   }
 };

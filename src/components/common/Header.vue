@@ -1,5 +1,5 @@
 <template>
-  <header class="w-full bg-white border-b shadow-sm">
+  <header class="w-full bg-white shadow-lg">
     <div class="grid grid-cols-12 items-center h-16 px-4 md:px-0">
       <div class="hidden md:block md:col-span-1"></div>
 

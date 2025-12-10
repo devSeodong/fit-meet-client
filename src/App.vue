@@ -5,10 +5,10 @@ import { useAuthStore } from '@/stores/Auth';
 
 const store = useAuthStore();
 
-// onMounted(async () => {
-//   // 쿠키 기반 로그인 복구
-//   await store.fetchUserInfo();
-// });
+onMounted(async () => {
+  // 쿠키 기반 로그인 복구
+  await store.fetchUserInfo();
+});
 </script>
 
 <template>

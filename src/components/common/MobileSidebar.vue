@@ -4,7 +4,7 @@
     :class="open ? 'translate-x-0 w-3/4' : 'translate-x-full w-3/4'"
   >
     <!-- 상단 헤더 -->
-    <div class="flex justify-between items-center px-10 py-6 border-b">
+    <div class="flex justify-between items-center px-10 py-6 shadow-sm">
       <span class="text-xl font-bold">메뉴</span>
       <button class="text-2xl" @click="close">
         <XMarkIcon class="w-8 h-8" />
@@ -33,7 +33,7 @@
     <!-- 하단 프로필 영역 (완전 고정) -->
     <div
       v-if="store.isLoggedIn"
-      class="absolute bottom-0 left-0 w-full px-10 py-4 border-t flex items-center justify-between"
+      class="absolute bottom-0 left-0 w-full px-10 py-4 shadow-sm flex items-center justify-between"
     >
       <div class="flex items-center gap-5">
         <img

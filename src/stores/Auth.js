@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', {
       nickname: '',
       profileImageUrl: '',
     },
-    isLoggedIn: true,
+    isLoggedIn: false,
     loadingUser: true, // 앱 로딩 시 사용자 정보 불러오는 중
   }),
 
@@ -23,10 +23,12 @@ export const useAuthStore = defineStore('auth', {
         );
         return res.data;
       } catch (err) {
+        console.log(err.response);
         if (err.response) {
-          return err.response?.data;
+          // ❗ 여기서 throw 해야 catch로 넘어감
+          throw err.response.data;
         } else {
-          throw err.response?.data || err;
+          throw err;
         }
       }
     },
@@ -73,35 +75,35 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // 사용자 정보 조회 (/api/auth/me)
-    // async fetchUserInfo() {
-    //   this.loadingUser = true;
+    async fetchUserInfo() {
+      this.loadingUser = true;
 
-    //   try {
-    //     const res = await axios.get(
-    //       `${import.meta.env.VITE_API_URL}/api/user/profile-info`,
-    //       { withCredentials: true },
-    //     );
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/user/profile-info`,
+          { withCredentials: true },
+        );
 
-    //     if (res.data.code === 0) {
-    //       this.userInfo = {
-    //         nickname: res.data.data.nickname,
-    //         profileImageUrl: res.data.data.profileImageUrl,
-    //       };
-    //       this.isLoggedIn = true;
-    //       return true; // 성공
-    //     } else {
-    //       this.userInfo = null;
-    //       this.isLoggedIn = false;
-    //       return false; // 실패
-    //     }
-    //   } catch (err) {
-    //     this.userInfo = null;
-    //     this.isLoggedIn = false;
-    //     return false;
-    //   } finally {
-    //     this.loadingUser = false;
-    //   }
-    // },
+        if (res.data.code === 0) {
+          this.userInfo = {
+            nickname: res.data.data.nickname,
+            profileImageUrl: res.data.data.profileImageUrl,
+          };
+          this.isLoggedIn = true;
+          return true; // 성공
+        } else {
+          this.userInfo = null;
+          this.isLoggedIn = false;
+          return false; // 실패
+        }
+      } catch (err) {
+        this.userInfo = null;
+        this.isLoggedIn = false;
+        return false;
+      } finally {
+        this.loadingUser = false;
+      }
+    },
 
     // 로그아웃
     async logout() {

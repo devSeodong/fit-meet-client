@@ -9,7 +9,7 @@
 6. 폼데이터 전송 (이메일, 비번, 로그인(통괄))
 -->
 <template>
-  <form @submit.prevent="submitLogin" class="flex flex-col gap-7 my-6">
+  <form @submit.prevent="submitLogin" class="flex flex-col gap-7 mt-6">
     <div class="flex flex-col">
       <label class="text-base font-semibold text-[#8A8F6E]">이메일</label>
       <input
@@ -33,6 +33,7 @@
         {{ passwordMsg }}
       </p>
     </div>
+    <div></div>
 
     <!-- 버튼과 인풋 사이 간격 크게 -->
     <button
@@ -42,7 +43,7 @@
       로그인
     </button>
 
-    <div class="mt-4 md:hidden text-center">
+    <div class="md:hidden text-center">
       <RouterLink
         to="/auth/signup"
         class="text-sm text-[#68b478] hover:underline"
@@ -89,7 +90,8 @@ const submitLogin = async () => {
     console.log('로그인 콘솔::', res);
     if (res.code === 0) {
       alert('로그인 성공!');
-      router.push({ name: 'home' });
+      router.push('/');
+      // router.push({ name: 'dashBoard' });
     } else {
       if (res.code === 2001) {
         emailMsg.value = res.msg;
