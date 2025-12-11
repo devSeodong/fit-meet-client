@@ -6,8 +6,10 @@
       @click="toggle"
       class="w-10 h-10 rounded-full overflow-hidden border"
     >
-      이미지
-      <!-- <img :src="user.profile_image" alt="profile" /> -->
+      <img
+        :src="store.userInfo.profileImageUrl || profileImg"
+        class="w-10 h-10 rounded-full object-cover"
+      />
     </button>
 
     <!-- 드롭다운 내용 -->
@@ -16,8 +18,11 @@
       class="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border p-4 z-50"
     >
       <div class="flex items-center gap-3 mb-4">
-        <img :src="user.profile_image" class="w-10 h-10 rounded-full border" />
-        <div class="font-semibold">{{ user.nickname }}님</div>
+        <img
+          :src="store.userInfo.profileImageUrl || profileImg"
+          class="w-10 h-10 rounded-full border"
+        />
+        <div class="font-semibold">{{ store.userInfo.nickname }}님</div>
       </div>
 
       <RouterLink
@@ -41,9 +46,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useAuthStore } from '@/stores/Auth';
+import profileImg from '@/assets/profile.png';
 
 const store = useAuthStore();
-const user = store.userInfo;
+// const user = store.userInfo;
 
 const visible = ref(false);
 const dropdownRef = ref(null);

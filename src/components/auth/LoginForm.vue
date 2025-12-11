@@ -33,12 +33,18 @@
         {{ passwordMsg }}
       </p>
     </div>
-    <div></div>
+    <div
+      class="text-sm text-right text-gray-400 hover:underline hover:text-blue-600 cursor-pointer"
+    >
+      <RouterLink to="/auth/password-reset">
+        비밀번호를 잊어버리셨나요?
+      </RouterLink>
+    </div>
 
     <!-- 버튼과 인풋 사이 간격 크게 -->
     <button
       type="submit"
-      class="w-full py-3 mt-6 text-white text-lg font-semibold rounded-xl bg-[#D3A373] hover:bg-[#b9885f] transition shadow"
+      class="w-full py-3 text-white text-lg font-semibold rounded-xl bg-[#D3A373] hover:bg-[#b9885f] transition shadow"
     >
       로그인
     </button>

@@ -4,7 +4,7 @@
     :class="open ? 'translate-x-0 w-3/4' : 'translate-x-full w-3/4'"
   >
     <!-- 상단 헤더 -->
-    <div class="flex justify-between items-center px-10 py-6 shadow-sm">
+    <div class="flex justify-between items-center px-12 py-4 shadow-sm">
       <span class="text-xl font-bold">메뉴</span>
       <button class="text-2xl" @click="close">
         <XMarkIcon class="w-8 h-8" />
@@ -37,7 +37,7 @@
     >
       <div class="flex items-center gap-5">
         <img
-          :src="store.userInfo.profileImageUrl"
+          :src="store.userInfo.profileImageUrl || profileImg"
           class="w-10 h-10 rounded-full object-cover"
         />
         <div class="flex flex-col">
@@ -77,6 +77,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
 } from '@heroicons/vue/24/outline';
 import { useAuthStore } from '@/stores/Auth';
+import profileImg from '@/assets/profile.png';
 
 const props = defineProps({
   open: Boolean,
