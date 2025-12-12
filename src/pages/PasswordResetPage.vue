@@ -28,7 +28,7 @@
           :to="{ name: 'passwordReset' }"
           class="text-sm text-red-700 underline mt-4 block"
         >
-          다시 이메일 입력 페이지로 돌아가기
+          다시 재설정 이메일 요청 페이지로 돌아가기
         </RouterLink>
       </div>
 
@@ -62,15 +62,16 @@ const validateToken = async token => {
   tokenStatus.value = 'pending';
   try {
     // 🚨 GET /validate API 호출
-    const res = await store.validateToken(token);
+    const res = await store.validatePasswordReset(token);
 
-    if (res.code === 0 && res.data.isValid) {
-      // 백엔드 응답 구조에 따라 수정 필요
+    if (res.status === 200 && res.data === 'VALID') {
       tokenStatus.value = 'valid';
     } else {
+      // 200이 아니거나, 200이더라도 데이터가 'VALID'가 아닌 경우
       tokenStatus.value = 'invalid';
     }
   } catch (error) {
+    // 네트워크 오류 등 예외 발생 시 (catch 블록이 실행될 가능성은 낮지만 안전을 위해)
     console.error('Token validation failed:', error);
     tokenStatus.value = 'invalid';
   }

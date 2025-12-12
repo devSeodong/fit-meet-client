@@ -48,18 +48,18 @@
 <script setup>
 import { ref, computed, watch, defineEmits, defineExpose } from 'vue';
 
-// 부모에게 값과 상태를 전달하기 위한 Emit 정의
 const emit = defineEmits([
   'update:password',
   'update:pwCheck',
   'update:isPasswordValid',
+  'update:isMatch', // 🚨 1. isMatch emit 추가
 ]);
 
 // 내부 상태 관리
 const passwordLocal = ref('');
 const pwCheckLocal = ref('');
 const pwStatus = ref('');
-const passwordInputRef = ref(null); // 포커스를 위한 ref
+const passwordInputRef = ref(null);
 
 // 로직 복사
 const PASSWORD_REGEX =
@@ -69,15 +69,21 @@ const passwordValidationMsg = ref('');
 
 // 비밀번호 정규식 유효성 검사 및 부모에게 값 전달
 watch(passwordLocal, newPassword => {
-  emit('update:password', newPassword);
+  // 공백 제거 후 부모에게 값 전달
+  const trimmedPassword = newPassword.trim();
+  emit('update:password', trimmedPassword);
 
-  if (!newPassword) {
+  if (!trimmedPassword) {
     isPasswordValid.value = false;
     passwordValidationMsg.value = '';
     return;
   }
 
-  if (PASSWORD_REGEX.test(newPassword)) {
+  const regexTestResult = PASSWORD_REGEX.test(trimmedPassword);
+  // console.log(`[PF] Input: "${trimmedPassword}" (Length: ${trimmedPassword.length})`);
+  // console.log(`[PF] Regex Test Result: ${regexTestResult}`);
+
+  if (regexTestResult) {
     isPasswordValid.value = true;
     passwordValidationMsg.value = '사용 가능한 비밀번호입니다.';
   } else {
@@ -97,11 +103,36 @@ watch(isPasswordValid, isValid => {
   emit('update:isPasswordValid', isValid);
 });
 
-// 비밀번호 일치 메시지
-const passwordMsg = computed(() => {
-  if (!passwordLocal.value || !pwCheckLocal.value) return '';
+// 🚨 2. 일치 여부 상태를 계산하는 Computed 속성
+const isMatchComputed = computed(() => {
+  const p1 = passwordLocal.value.trim();
+  const p2 = pwCheckLocal.value.trim();
 
-  if (passwordLocal.value === pwCheckLocal.value) {
+  // 두 필드가 모두 비어있지 않고 값이 일치해야 True
+  return p1 !== '' && p2 !== '' && p1 === p2;
+});
+
+// 🚨 3. isMatch 상태가 변경될 때마다 부모에게 전달
+watch(
+  isMatchComputed,
+  newIsMatch => {
+    // console.log('Emit isMatch:', newIsMatch); // 디버깅용
+    emit('update:isMatch', newIsMatch);
+  },
+  { immediate: true },
+); // 컴포넌트 마운트 직후 한 번 실행하여 초기 상태 전달
+
+// 비밀번호 일치 메시지 (UI 표시용)
+const passwordMsg = computed(() => {
+  const p1 = passwordLocal.value.trim();
+  const p2 = pwCheckLocal.value.trim();
+
+  if (!p1 || !p2) {
+    pwStatus.value = '';
+    return '';
+  }
+
+  if (p1 === p2) {
     pwStatus.value = 'success';
     return '비밀번호가 일치합니다.';
   } else {
@@ -110,11 +141,10 @@ const passwordMsg = computed(() => {
   }
 });
 
-// 부모 컴포넌트가 접근할 수 있도록 중요한 상태와 ref를 노출 (핵심!)
+// 부모 컴포넌트가 접근할 수 있도록 중요한 상태와 ref를 노출
 defineExpose({
-  isMatch: computed(() => passwordLocal.value === pwCheckLocal.value),
-  isValidRegex: isPasswordValid,
-  passwordInput: passwordInputRef, // ref 노출
+  // isMatch, isValidRegex는 이제 부모가 emit으로 받으므로 제거 (선택적)
+  passwordInput: passwordInputRef, // ref 노출 (포커스용)
   passwordValue: passwordLocal,
   pwCheckValue: pwCheckLocal,
 });

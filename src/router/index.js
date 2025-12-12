@@ -18,11 +18,6 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomePage,
-    children: [
-      {
-        path: '',
-      },
-    ],
   },
   {
     path: '/auth',

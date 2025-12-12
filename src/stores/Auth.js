@@ -9,7 +9,7 @@ export const useAuthStore = defineStore('auth', {
       nickname: '',
       profileImageUrl: '',
     },
-    isLoggedIn: true,
+    isLoggedIn: false,
     loadingUser: true, // 앱 로딩 시 사용자 정보 불러오는 중
   }),
 
@@ -147,25 +147,33 @@ export const useAuthStore = defineStore('auth', {
     },
 
     //비밀번호 재설정 토큰 유효성검사 (/api/auth/password-reset/validate)
-    async validatePasswordReset() {
+    async validatePasswordReset(token) {
       try {
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/auth/password-reset/validate`,
-          {},
-          { withCredentials: true },
+          { params: { token: token } },
+          // { withCredentials: true },
         );
-      } catch (err) {}
+        console.log('token validate :: ', res);
+        return res;
+      } catch (err) {
+        return err.response.data;
+      }
     },
 
-    //비밀번호 재설정 (/api/auth/password-reset/convirm)
-    async confirmPasswordReset() {
+    //비밀번호 재설정 (/api/auth/password-reset/confirm)
+    async confirmPasswordReset(payload) {
       try {
         const res = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/auth/password-reset/confirm`,
-          {},
+          payload,
           { withCredentials: true },
         );
-      } catch (err) {}
+        console.log('token confirm :: ', res);
+        return res.data;
+      } catch (err) {
+        return err.response.data;
+      }
     },
 
     // 로그아웃

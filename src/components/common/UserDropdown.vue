@@ -7,7 +7,7 @@
       class="w-10 h-10 rounded-full overflow-hidden border"
     >
       <img
-        :src="store.userInfo.profileImageUrl || profileImg"
+        :src="store.userInfo?.profileImageUrl || profileImg"
         class="w-10 h-10 rounded-full object-cover"
       />
     </button>
@@ -19,10 +19,10 @@
     >
       <div class="flex items-center gap-3 mb-4">
         <img
-          :src="store.userInfo.profileImageUrl || profileImg"
+          :src="store.userInfo?.profileImageUrl || profileImg"
           class="w-10 h-10 rounded-full border"
         />
-        <div class="font-semibold">{{ store.userInfo.nickname }}님</div>
+        <div class="font-semibold">{{ store.userInfo?.nickname }}님</div>
       </div>
 
       <RouterLink

@@ -37,13 +37,13 @@
     >
       <div class="flex items-center gap-5">
         <img
-          :src="store.userInfo.profileImageUrl || profileImg"
+          :src="store.userInfo?.profileImageUrl || profileImg"
           class="w-10 h-10 rounded-full object-cover"
         />
         <div class="flex flex-col">
           <span class="text-base text-gray-700 font-medium"> 환영합니다! </span>
           <span class="text-base text-gray-700 font-medium">
-            {{ store.userInfo.nickname }}님
+            {{ store.userInfo?.nickname }}님
           </span>
         </div>
       </div>
@@ -78,11 +78,20 @@ import {
 } from '@heroicons/vue/24/outline';
 import { useAuthStore } from '@/stores/Auth';
 import profileImg from '@/assets/profile.png';
+import { watch } from 'vue';
 
 const props = defineProps({
   open: Boolean,
   close: Function,
 });
+
+watch(
+  () => props.open,
+  newVal => {
+    console.log('Sidebar Open Status:', newVal);
+  },
+  { immediate: true },
+);
 
 const store = useAuthStore();
 
