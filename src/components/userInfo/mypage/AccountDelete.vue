@@ -1,5 +1,7 @@
 <template>
-  <div class="p-4 border border-red-100 rounded-lg bg-red-50">
+  <div
+    class="p-6 max-w-3xl mx-auto border border-red-100 rounded-lg bg-red-50 mb-6 my-4"
+  >
     <h3 class="text-xl font-semibold text-red-700 mb-4">회원 탈퇴</h3>
     <p class="text-sm text-red-600 mb-6">
       경고: 회원 탈퇴 시 모든 계정 정보와 데이터가 영구적으로 삭제되며 복구할 수
@@ -45,14 +47,17 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/Auth';
 import { ref } from 'vue';
 
 const reason = ref('');
 const isConfirmed = ref(false);
+const store = useAuthStore();
 
 const handleDeletion = () => {
   if (isConfirmed.value) {
     // 회원 탈퇴 API 호출 로직 구현
+    store.signout();
     console.log('회원 탈퇴 요청됨');
   }
 };

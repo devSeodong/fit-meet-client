@@ -3,6 +3,7 @@
 .bg-blur-container {
   /* 기존 스타일 유지 */
   @apply relative overflow-hidden min-h-screen;
+  /* @apply relative min-h-screen; */
 }
 
 /* 🟢 왼쪽 하단 - 녹색 블러 (::before) */

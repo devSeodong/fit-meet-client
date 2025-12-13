@@ -2,6 +2,7 @@
 import AppHeader from '@/components/common/Header.vue';
 import { onMounted } from 'vue';
 import { useAuthStore } from '@/stores/Auth';
+import MobileSidebar from './components/common/MobileSidebar.vue';
 
 const store = useAuthStore();
 
@@ -16,6 +17,8 @@ onMounted(async () => {
     <AppHeader />
     <router-view />
   </div>
+
+  <MobileSidebar />
 </template>
 
 <style scoped></style>

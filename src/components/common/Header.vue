@@ -1,7 +1,5 @@
 <template>
-  <header
-    class="w-full bg-white/90 shadow-sm backdrop-blur-sm sticky top-0 z-10"
-  >
+  <header class="w-full bg-white shadow-sm backdrop-blur-sm sticky top-0 z-10">
     <div class="grid grid-cols-12 items-center h-16 px-4 md:px-0">
       <div class="hidden md:block md:col-span-1"></div>
 
@@ -10,7 +8,7 @@
           FIT-MEET
         </div>
 
-        <div class="hidden md:flex items-center justify-center flex-grow">
+        <div class="hidden md:flex items-center justify-center grow">
           <nav class="flex items-center gap-12 text-gray-700 font-medium">
             <RouterLink
               to="/dashboard"
@@ -44,7 +42,7 @@
           </nav>
         </div>
 
-        <div class="flex items-center gap-4 hidden md:flex">
+        <div class="items-center gap-4 hidden md:flex">
           <template v-if="!store.isLoggedIn">
             <RouterLink to="/auth/login" class="hover:text-blue-600"
               >로그인</RouterLink

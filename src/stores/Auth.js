@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/user/profile-info`,
+          `${import.meta.env.VITE_API_URL}/api/user/profile-image`,
           { withCredentials: true },
         );
         console.log('fetchBasicUserInfo res:: ', res);
@@ -92,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
           this.userInfo = {
             nickname: userData.nickname,
             profileImageUrl: userData.profileImageUrl,
-            email: userData.email,
+            // email: userData.email,
           };
           console.log(this.userInfo);
           this.isLoggedIn = true;
@@ -256,10 +256,36 @@ export const useAuthStore = defineStore('auth', {
           this.userInfo = null;
           this.isLoggedIn = false;
           alert(res.data.msg);
+          router.push({ name: 'login' });
         }
       } catch (err) {
         console.log(err);
         console.log('로그아웃에 실패했습니다!');
+      }
+    },
+    // 회원탈퇴
+    async signout() {
+      const userStore = useUserStore();
+      try {
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/user/signout`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
+        console.log('회원탈퇴 됬나?::', res);
+
+        if (res.data.code === 0) {
+          this.userInfo = {}; // 빈 객체로 초기화
+          this.isLoggedIn = false;
+          userStore.setHealthInfoFromFetch({});
+          alert(res.data.msg);
+          router.push({ name: 'login' });
+        }
+      } catch (err) {
+        console.log(err);
+        console.log('회원탈퇴에 실패했습니다!');
       }
     },
   },
