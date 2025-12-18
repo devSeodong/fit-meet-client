@@ -7,7 +7,7 @@
         <div class="lg:col-span-7 grid grid-cols-1 gap-6">
           <TodayNutritions class="h-48" />
 
-          <TotalScores class="h-[28rem]" />
+          <TotalScores class="h-112" />
 
           <DietCalender />
         </div>
@@ -15,7 +15,7 @@
         <div class="lg:col-span-3 grid grid-cols-1 gap-6">
           <AiAnalysisCard class="h-48" />
 
-          <MyStreak class="h-[28rem]" />
+          <MyStreak class="h-112" />
         </div>
       </div>
 

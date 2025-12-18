@@ -66,7 +66,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useDietStore } from '@/stores/Diet';
-import { parseServingSize } from '@/utils/foodUtils'; // 💡 아래에 유틸 함수 추가 예정
+import { parseServingSize } from '@/utils/FoodUtils'; // 💡 아래에 유틸 함수 추가 예정
 
 const props = defineProps({
   food: {

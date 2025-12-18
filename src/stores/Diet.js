@@ -90,47 +90,63 @@ export const useDietStore = defineStore('diet', () => {
   const getDietByDate = dateString => {
     return dailyDietMap.value[dateString] || [];
   };
-  // async function fetchDietForDay(dateString) {
-  //   // 캐싱 로직
-  //   if (dailyDietMap[dateString] && dailyDietMap[dateString].length > 0) {
-  //     return;
-  //   }
 
-  //   console.log(dateString);
-  //   isLoading.value = true;
-  //   error.value = null;
-  //   try {
-  //     const response = await axios.get(`${BASE_URL}/day?date=${dateString}`, {
-  //       withCredentials: true,
-  //     });
-  //     console.log(response.data);
+  /**
+   * 특정 식단의 상세 정보(음식 리스트 포함) 조회
+   */
+  async function fetchDietDetail(dietId) {
+    if (!dietId) return null;
+    isLoading.value = true;
+    try {
+      const response = await axios.get(`${BASE_URL}/${dietId}`, {
+        withCredentials: true,
+      });
+      return response.data.data; // foods 배열이 포함된 상세 객체 반환
+    } catch (err) {
+      console.error('식단 상세 조회 실패:', err);
+      return null;
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-  //     // dailyDietMap 업데이트
-  //     // 새로운 객체로 덮어쓰기 X, 기존 객체를 직접 수정
-  //     dailyDietMap[dateString] = response.data.data || [];
+  /**
+   * 기간별 식단 조회 (캘린더용 점 표시용)
+   * startDate ~ endDate 범위의 데이터를 한 번에 가져와서 dailyDietMap에 분배
+   */
+  async function fetchMonthDiets(startDate, endDate) {
+    isLoading.value = true;
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/calendar?startDate=${startDate}&endDate=${endDate}`,
+        {
+          withCredentials: true,
+        },
+      );
 
-  //     // dailyDietMap.value = {
-  //     //   ...dailyDietMap.value,
-  //     //   [dateString]: response.data.data || [],
-  //     // };
-  //     console.log(dailyDietMap);
-  //   } catch (err) {
-  //     error.value = `일간 식단 정보를 가져오는 데 실패했습니다: ${dateString}`;
-  //     // dailyDietMap.value[dateString] = [];
-  //     dailyDietMap[dateString] = [];
-  //     console.error('스토어: 일간 식단 조회 실패', err);
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
+      const data = response.data.data || [];
 
-  // // 특정 날짜의 식단 목록을 가져오는 Getter
-  // // const getDietByDate = computed(() => dateString => {
-  // //   return dailyDietMap.value[dateString] || [];
-  // // });// 수정
-  // function getDietByDate(dateString) {
-  //   return dailyDietMap[dateString] || [];
-  // }
+      // 1. 데이터를 날짜별로 그룹화
+      const grouped = data.reduce((acc, diet) => {
+        const dateKey = diet.date.split('T')[0]; // "2025-12-17"
+        if (!acc[dateKey]) acc[dateKey] = [];
+        acc[dateKey].push(diet);
+        return acc;
+      }, {});
+
+      // 2. 기존 데이터와 합치기 (반응성 유지)
+      dailyDietMap.value = {
+        ...dailyDietMap.value,
+        ...grouped,
+      };
+
+      console.log('월간 데이터 로드 완료:', grouped);
+    } catch (err) {
+      console.error('월간 데이터 조회 실패:', err);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   async function fetchDietNutrition(foodDataArray) {
     if (!foodDataArray || foodDataArray.length === 0) {
@@ -165,6 +181,44 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
+  /**
+   * 식단 삭제 (DELETE /api/diets/{dietId})
+   */
+  async function deleteDiet(dietId, dateString) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const response = await axios.delete(`${BASE_URL}/${dietId}`, {
+        withCredentials: true,
+      });
+
+      if (response.data.code === 0) {
+        // 🔥 Store 상태 반영: dailyDietMap에서 해당 식단 제거
+        if (dailyDietMap.value[dateString]) {
+          dailyDietMap.value[dateString] = dailyDietMap.value[
+            dateString
+          ].filter(d => (d.id || d.dietId) !== dietId);
+
+          // 만약 해당 날짜에 식단이 하나도 안 남았다면 키 자체를 정리(옵션)
+          if (dailyDietMap.value[dateString].length === 0) {
+            delete dailyDietMap.value[dateString];
+          }
+
+          // 반응성 트리거를 위한 재할당
+          dailyDietMap.value = { ...dailyDietMap.value };
+        }
+        console.log(`식단 ${dietId} 삭제 성공`);
+      }
+      return response.data;
+    } catch (err) {
+      error.value = '식단 삭제에 실패했습니다.';
+      console.error('스토어: 식단 삭제 실패', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // TODO: updateDiet, deleteDiet, fetchDietDetail 등의 CRUD 액션 추가 필요
 
   // 외부에 노출할 상태, 게터, 액션을 반환
@@ -182,7 +236,10 @@ export const useDietStore = defineStore('diet', () => {
     // Actions
     insertDiet,
     fetchDietForDay,
+    fetchDietDetail,
+    fetchMonthDiets,
     fetchDietNutrition,
+    deleteDiet,
     // TODO: updateDiet, deleteDiet
   };
 });

@@ -24,7 +24,7 @@
           <Transition name="fade-slide" mode="out-in">
             <component
               :is="currentComponent"
-              :key="step"
+              :key="formKey + step"
               :form-data="formData"
               :mode="mode"
               @update:form-data="updateFormData"
@@ -85,6 +85,7 @@ import ManualFoodInput from './ManualFoodInput.vue';
 import MealFoodLayout from './MealFoodLayout.vue';
 import FinalReviewForm from './FinalReviewForm.vue';
 import { useDietStore } from '@/stores/Diet';
+import { useMealStore } from '@/stores/Meal';
 
 // ------------------ Props ------------------
 const props = defineProps({
@@ -97,11 +98,13 @@ const props = defineProps({
 
 const router = useRouter();
 const dietStore = useDietStore();
+const mealStore = useMealStore();
 
 // ------------------ 폼 단계 및 상태 ------------------
 
 const step = ref(1);
 const isSubmitting = ref(false);
+const formKey = ref(0); // 추가
 
 // 💡 폼 데이터 상태 초기화
 const formData = reactive({
@@ -113,6 +116,24 @@ const formData = reactive({
   sourceType: props.mode === 'manual' ? 'MANUAL' : 'PUBLIC-API', // 모드에 따라 초기 sourceType 설정
   foods: [],
 });
+
+function resetForm() {
+  // 1. 단계 초기화
+  step.value = 1;
+  formKey.value++; // 👈 제출 성공 시 이 값을 올리면 모든 하위 컴포넌트의 로컬 상태가 날아갑니다.
+
+  // 2. formData 초기화
+  // Object.assign을 사용하여 기존 reactive 객체의 속성만 초기값으로 덮어씁니다.
+  Object.assign(formData, {
+    date: new Date(),
+    mealType: 'A',
+    description: '',
+    imageUrl: '',
+    isPublic: false,
+    sourceType: props.mode === 'manual' ? 'MANUAL' : 'PUBLIC-API',
+    foods: [], // 특히 이 부분이 비워져야 이전 기록이 사라집니다.
+  });
+}
 
 // 💡 Sub-component에서 데이터를 업데이트할 때 사용될 함수
 const updateFormData = newFormData => {
@@ -215,6 +236,8 @@ async function submitDiet() {
     if (response.code === 0) {
       alert('식단 등록이 완료되었습니다!');
       // 성공 시 라우팅 이동
+      resetForm();
+      mealStore.clearSearch();
       router.push({ name: 'DietManagement' });
     } else {
       // 서버에서 code: 0이 아닌 다른 코드를 반환했을 때의 처리

@@ -37,7 +37,7 @@
           class="p-4 bg-white rounded-xl shadow-sm border border-[#8A8F6E]/20"
         >
           <div class="flex items-end justify-between mb-4">
-            <span class="font-bold text-gray-700">📊 영양소 밸런스</span>
+            <span class="font-bold text-gray-700"> 영양소 밸런스</span>
             <span class="text-2xl font-black text-red-500"
               >{{ totalNutrition.kcal }}
               <small class="text-sm font-normal text-gray-500"
@@ -84,7 +84,7 @@
         </div>
 
         <div>
-          <h3 class="font-bold text-gray-700 mb-3 ml-1">🍽 포함된 음식</h3>
+          <h3 class="font-bold text-gray-700 mb-3 ml-1">포함된 음식</h3>
           <div class="space-y-2">
             <div
               v-for="food in diet.foods"
@@ -102,9 +102,10 @@
           </div>
         </div>
 
+        <h3 class="font-bold text-gray-700 mb-3 ml-1">식단 메모</h3>
         <div
           v-if="diet.description"
-          class="p-4 bg-gray-50 rounded-lg italic text-gray-600 text-sm"
+          class="p-4 bg-white rounded-lg italic text-gray-600 text-sm"
         >
           " {{ diet.description }} "
         </div>
@@ -112,6 +113,7 @@
 
       <div class="p-4 bg-white border-t flex gap-2">
         <button
+          @click="handleDelete"
           class="flex-1 py-3 rounded-xl bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition"
         >
           삭제
@@ -173,4 +175,21 @@ const formattedDate = computed(() => {
     weekday: 'short',
   });
 });
+
+const handleDelete = async () => {
+  if (!props.diet?.id) return;
+
+  if (confirm('이 식단 데이터를 삭제할까요?')) {
+    try {
+      // 스토어 액션 호출 (식단ID와 날짜Key 전달)
+      const dateKey = props.diet.date.split('T')[0];
+      await dietStore.deleteDiet(props.diet.id, dateKey);
+
+      alert('삭제 완료되었습니다.');
+      emit('close');
+    } catch (err) {
+      alert('삭제에 실패했습니다.');
+    }
+  }
+};
 </script>

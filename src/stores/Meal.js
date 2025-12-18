@@ -17,6 +17,12 @@ export const useMealStore = defineStore('meal', () => {
   const searched = ref(false); // 검색이 한 번이라도 수행되었는지 여부
 
   // === ACTIONS (함수) ===
+  function clearSearch() {
+    searchResults.value = [];
+    searched.value = false;
+    isLoading.value = false;
+    console.log('MealStore: 검색 데이터가 초기화되었습니다.');
+  }
 
   /**
    * 음식 검색 (GET /api/meals/search)
@@ -101,6 +107,7 @@ export const useMealStore = defineStore('meal', () => {
     searchResults,
     isLoading,
     searched,
+    clearSearch,
     searchMeals,
     fetchSelectedFoodDetails,
     getDebouncedSearch,

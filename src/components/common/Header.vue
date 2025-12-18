@@ -5,7 +5,7 @@
 
       <div class="col-span-12 md:col-span-10 flex items-center">
         <div class="text-2xl font-bold text-blue-600 select-none mr-auto">
-          FIT-MEET
+          <img src="@/assets/FitmeetLogo.png" alt="로고" class="w-20" />
         </div>
 
         <div class="hidden md:flex items-center justify-center grow">

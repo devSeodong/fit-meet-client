@@ -28,7 +28,7 @@
         >
           <h4 class="text-lg font-bold text-gray-800">검색 결과</h4>
 
-          <div class="grow overflow-y-auto space-y-3 pr-2">
+          <div class="flex-1 overflow-y-auto max-h-[500px] custom-scrollbar">
             <div v-for="food in searchResults" :key="food.foodCd">
               <MealSearchFoodItem :food="food" @food-added="handleFoodAdded" />
             </div>
@@ -125,24 +125,6 @@ watch(searchQuery, newKeyword => {
   debouncedSearch(newKeyword);
 });
 
-// // 2. 음식 추가 => 안 씀
-// const addFood = async searchResultFood => {
-//   // 💡 스토어를 통해 영양소 상세 정보를 비동기로 가져옵니다.
-//   const detailedFood = await mealStore.fetchSelectedFoodDetails(
-//     searchResultFood,
-//   );
-
-//   if (!detailedFood) {
-//     // 상세 정보 로드 실패 (store에서 이미 alert 처리)
-//     return;
-//   }
-
-//   // 💡 상세 정보 (nutrition 포함)를 최종 foods 배열에 추가
-//   const newFoods = [...formData.value.foods, detailedFood];
-//   updateFoods(newFoods);
-
-//   // ... (모바일 전환 로직) ...
-// };
 const handleFoodAdded = finalFoodData => {
   // finalFoodData는 dietStore.fetchDietNutrition에서 반환된 최종 객체입니다.
   if (!finalFoodData) return;

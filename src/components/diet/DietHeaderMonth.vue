@@ -34,7 +34,7 @@
         <button
           @click="$emit('changeView', 'week')"
           :class="[
-            'px-4 py-2 text-sm font-bold transition',
+            'px-4 py-2 text-xs font-bold transition',
             viewMode === 'week'
               ? 'orange-bg-color text-white'
               : 'text-gray-700 lightorange-bg-color',
@@ -45,7 +45,7 @@
         <button
           @click="$emit('changeView', 'month')"
           :class="[
-            'px-4 py-2 text-sm font-bold transition',
+            'px-4 py-2 text-xs font-bold transition',
             viewMode === 'month'
               ? 'orange-bg-color text-white'
               : 'text-gray-700 lightorange-hover',
