@@ -2,9 +2,6 @@
   <div
     class="flex flex-col gap-6 p-4 rounded-lg border border-[#fdf2e7] bg-[#fefcf7]"
   >
-    <!-- <h3 class="text-2xl font-bold text-[#8A8F6E] border-b pb-2">
-      📝 최종 식단 검토 및 제출
-    </h3> -->
     <p class="text-gray-600">
       등록 전, 모든 정보 (날짜, 음식 목록, 영양 성분)를 확인해주세요.
     </p>
@@ -74,120 +71,110 @@
               <span class="text-base font-bold text-[#8A8F6E] truncate">{{
                 food.foodNmKr
               }}</span>
-              <span class="text-xs text-gray-500 mt-0.5"
-                >출처:
-                {{
-                  food.sourceType === 'PUBLIC_API' ? '공공데이터' : '수동 입력'
-                }}</span
-              >
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-xs text-gray-500">
+                  출처:
+                  {{
+                    food.sourceType === 'PUBLIC_API'
+                      ? '공공데이터'
+                      : '수동 입력'
+                  }}
+                </span>
+                <span class="text-xs text-gray-300">|</span>
+                <span class="text-xs font-bold text-[#8A8F6E]">
+                  섭취량: {{ food.intakeGram }}g
+                </span>
+              </div>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-sm">
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mt-3 text-sm"
+          >
             <div class="flex items-center gap-2">
-              <label class="w-20 shrink-0 font-medium text-gray-600"
-                >섭취량</label
-              >
-              <input
-                type="number"
-                :value="food.intakeGram"
-                :readonly="isReadonly"
-                @input="
-                  updateFoodField(index, 'intakeGram', $event.target.value)
-                "
-                class="review-input-inline"
-                :class="{ 'editable-input': !isReadonly }"
-              />
-              <span v-if="isReadonly" class="text-sm text-gray-600">g</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <label class="w-20 shrink-0 font-medium text-gray-600"
+              <label class="w-16 sm:w-20 shrink-0 font-medium text-gray-600"
                 >칼로리</label
               >
-              <input
-                type="number"
-                :value="food.kcal"
-                :readonly="isReadonly"
-                @input="updateFoodField(index, 'kcal', $event.target.value)"
-                class="review-input-inline"
-                :class="{ 'editable-input': !isReadonly }"
-              />
-              <span v-if="isReadonly" class="text-sm text-gray-600">Kcal</span>
+              <div class="flex items-center gap-1 grow min-w-0">
+                <input
+                  type="number"
+                  :value="food.kcal"
+                  :readonly="isReadonly"
+                  @input="updateFoodField(index, 'kcal', $event.target.value)"
+                  class="review-input-inline w-full"
+                  :class="{ 'editable-input': !isReadonly }"
+                />
+                <span class="w-8 shrink-0 text-xs text-gray-500 text-nowrap"
+                  >kcal</span
+                >
+              </div>
             </div>
 
             <div class="flex items-center gap-2">
-              <label class="w-20 shrink-0 font-medium text-gray-600"
+              <label class="w-16 sm:w-20 shrink-0 font-medium text-gray-600"
                 >탄수화물</label
               >
-              <input
-                type="number"
-                :value="food.carbohydrate"
-                :readonly="isReadonly"
-                @input="
-                  updateFoodField(index, 'carbohydrate', $event.target.value)
-                "
-                class="review-input-inline"
-                :class="{ 'editable-input': !isReadonly }"
-              />
-              <span v-if="isReadonly" class="text-sm text-gray-600">g</span>
+              <div class="flex items-center gap-1 grow min-w-0">
+                <input
+                  type="number"
+                  :value="food.carbohydrate"
+                  :readonly="isReadonly"
+                  @input="
+                    updateFoodField(index, 'carbohydrate', $event.target.value)
+                  "
+                  class="review-input-inline w-full"
+                  :class="{ 'editable-input': !isReadonly }"
+                />
+                <span class="w-8 shrink-0 text-xs text-gray-500 text-nowrap"
+                  >g</span
+                >
+              </div>
             </div>
 
             <div class="flex items-center gap-2">
-              <label class="w-20 shrink-0 font-medium text-gray-600"
+              <label class="w-16 sm:w-20 shrink-0 font-medium text-gray-600"
                 >단백질</label
               >
-              <input
-                type="number"
-                :value="food.protein"
-                :readonly="isReadonly"
-                @input="updateFoodField(index, 'protein', $event.target.value)"
-                class="review-input-inline"
-                :class="{ 'editable-input': !isReadonly }"
-              />
-              <span v-if="isReadonly" class="text-sm text-gray-600">g</span>
+              <div class="flex items-center gap-1 grow min-w-0">
+                <input
+                  type="number"
+                  :value="food.protein"
+                  :readonly="isReadonly"
+                  @input="
+                    updateFoodField(index, 'protein', $event.target.value)
+                  "
+                  class="review-input-inline w-full"
+                  :class="{ 'editable-input': !isReadonly }"
+                />
+                <span class="w-8 shrink-0 text-xs text-gray-500 text-nowrap"
+                  >g</span
+                >
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label class="w-16 sm:w-20 shrink-0 font-medium text-gray-600"
+                >지방</label
+              >
+              <div class="flex items-center gap-1 grow min-w-0">
+                <input
+                  type="number"
+                  :value="food.fat"
+                  :readonly="isReadonly"
+                  @input="updateFoodField(index, 'fat', $event.target.value)"
+                  class="review-input-inline w-full"
+                  :class="{ 'editable-input': !isReadonly }"
+                />
+                <span class="w-8 shrink-0 text-xs text-gray-500 text-nowrap"
+                  >g</span
+                >
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- <div
-      v-if="formData.foods.length > 0"
-      class="mt-4 p-4 border-2 border-[#8A8F6E] rounded-xl bg-[#f9f9f5]"
-    >
-      <h4 class="font-bold text-lg text-[#8A8F6E] mb-3">
-        ✨ 총 영양 성분 합계
-      </h4>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-semibold">
-        <div class="text-center p-2 bg-white rounded-lg shadow-sm">
-          <p class="text-xl text-red-500">{{ totalNutrition.kcal }}</p>
-
-          <p class="text-gray-600">총 Kcal</p>
-        </div>
-
-        <div class="text-center p-2 bg-white rounded-lg shadow-sm">
-          <p class="text-xl text-blue-500">
-            {{ totalNutrition.carbohydrate }}g
-          </p>
-
-          <p class="text-gray-600">탄수화물</p>
-        </div>
-
-        <div class="text-center p-2 bg-white rounded-lg shadow-sm">
-          <p class="text-xl text-green-500">{{ totalNutrition.protein }}g</p>
-
-          <p class="text-gray-600">단백질</p>
-        </div>
-
-        <div class="text-center p-2 bg-white rounded-lg shadow-sm">
-          <p class="text-xl text-orange-500">{{ totalNutrition.fat }}g</p>
-
-          <p class="text-gray-600">지방</p>
-        </div>
-      </div>
-    </div> -->
     <div
       v-if="formData.foods.length > 0"
       class="mt-4 p-4 border-2 border-brand rounded-xl bg-[#f9f9f5]"
@@ -195,7 +182,6 @@
       <h4 class="font-bold text-lg text-brand mb-4">✨ 총 영양 성분 합계</h4>
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-        <!-- 좌측: 총 칼로리 -->
         <div
           class="md:col-span-1 text-center p-3 bg-white rounded-lg shadow-sm"
         >
@@ -205,36 +191,33 @@
           <p class="text-gray-600 text-sm mt-1">총 Kcal</p>
         </div>
 
-        <!-- 우측 -->
         <div class="md:col-span-3 flex flex-col gap-3">
-          <!-- 라벨 -->
           <ul class="flex gap-6 list-disc pl-5 text-sm font-semibold">
             <li class="text-carb">탄수화물</li>
             <li class="text-protein">단백질</li>
             <li class="text-fat">지방</li>
           </ul>
 
-          <!-- 게이지 바 -->
           <div
-            class="w-full h-9 bg-gray-200 rounded-full p-1 shadow-inner flex gap-1"
+            class="w-full h-9 bg-gray-200 rounded-full p-1 shadow-inner flex gap-1 overflow-hidden"
           >
             <div
               :style="{ width: `${macroRatios.carbohydrate}%` }"
-              class="bg-carb rounded-2xl flex items-center justify-center text-xs font-bold text-white transition-all duration-700"
+              class="bg-carb rounded-2xl flex items-center justify-center text-xs font-bold text-white transition-all duration-700 min-w-fit px-2"
             >
               {{ totalNutrition.carbohydrate }}g
             </div>
 
             <div
               :style="{ width: `${macroRatios.protein}%` }"
-              class="bg-protein rounded-2xl flex items-center justify-center text-xs font-bold text-white transition-all duration-700"
+              class="bg-protein rounded-2xl flex items-center justify-center text-xs font-bold text-white transition-all duration-700 min-w-fit px-2"
             >
               {{ totalNutrition.protein }}g
             </div>
 
             <div
               :style="{ width: `${macroRatios.fat}%` }"
-              class="bg-fat rounded-2xl flex items-center justify-center text-xs font-bold text-white transition-all duration-700"
+              class="bg-fat rounded-2xl flex items-center justify-center text-xs font-bold text-white transition-all duration-700 min-w-fit px-2"
             >
               {{ totalNutrition.fat }}g
             </div>
@@ -391,19 +374,29 @@ const macroRatios = computed(() => {
 
   resize: vertical;
   height: auto;
-  min-height: 50px; /* 최소 높이 지정 (선택 사항) */
+  min-height: 50px;
+}
+
+.review-input-inline[readonly] {
+  border-color: #f3f4f6;
+  background-color: #f9fafb;
+  color: #6b7280;
+  cursor: default;
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .review-input-inline {
-  /* 음식 목록 내의 작은 input 스타일 */
   flex-grow: 1;
   padding: 0.25rem 0.5rem;
-  border: 1px solid #d1d5db; /* gray-300 */
+  border: 1px solid #a1a5ab;
   border-radius: 0.3rem;
-  background-color: #ffffff; /* white */
+  background-color: #ffffff;
   color: #4b5563;
-  font-size: 0.875rem; /* text-sm */
+  font-size: 0.875rem;
   font-weight: 600;
+  max-width: auto;
+  min-width: 0;
+  /* width: 30px; */
   cursor: default;
   text-align: right;
   outline: none;

@@ -6,66 +6,68 @@
       :initial-data="writeModalData"
       @close="isWriteModalOpen = false"
       @saved="handleDietSaved"
-    /> -->
+      /> -->
     <!-- <WriteDietBoardBtn /> -->
+    <TodayNutritions class="h-48 p-4 sm:p-6" />
     <div
-      class="flex flex-col max-w-4xl mx-auto p-4 bg-white rounded-xl shadow-lg sm:p-6"
+      class="flex flex-col mx-auto p-4 bg-white rounded-xl shadow-lg sm:p-6 mt-4"
     >
-      <!-- <TodayNutritions class="h-48" /> -->
-      <DietHeaderMonth
-        :selectedMonth="selectedMonth"
-        :viewMode="viewMode"
-        @changeMonth="selectedMonth = $event"
-        @changeView="viewMode = $event"
-      />
+      <div class="mt-4">
+        <DietHeaderMonth
+          :selectedMonth="selectedMonth"
+          :viewMode="viewMode"
+          @changeMonth="selectedMonth = $event"
+          @changeView="viewMode = $event"
+        />
 
-      <WeekDateSlider
-        v-if="viewMode === 'week'"
-        :base-month="selectedMonth"
-        :selected-date="selectedDate"
-        @select="selectedDate = $event"
-      />
-      <!-- <hr v-if="viewMode === 'week'" class="border-2" /> -->
-      <div
-        v-if="viewMode === 'week'"
-        class="relative p-px bg-linear-to-b from-gray-300 to-gray-100 shadow-sm"
-      ></div>
-      <!-- <MonthlyDietView v-else :selectedMonth="selectedMonth" /> -->
-      <MonthlyDietView
-        v-else
-        :selectedMonth="selectedMonth"
-        @dateClick="handleCalendarDateClick"
-      />
-
-      <DietCalendarModal
-        :is-visible="isCalendarModalOpen"
-        :selected-date="calendarSelectedDate"
-        :diets="dailyDietMap[selectedDateString] || []"
-        @close="isCalendarModalOpen = false"
-      />
-      <div class="rounded-lg">
-        <!-- border-2 border-[#79ae70] my-4 -->
-        <MealTypeTabs v-if="viewMode === 'week'" v-model="selectedMealType" />
-
-        <DietList
+        <WeekDateSlider
           v-if="viewMode === 'week'"
-          :diets="dietByMealType[selectedMealType]"
-          :mealLabel="mealLabelMap[selectedMealType]"
-          @itemClick="handleDietClick"
+          :base-month="selectedMonth"
+          :selected-date="selectedDate"
+          @select="selectedDate = $event"
+        />
+        <!-- <hr v-if="viewMode === 'week'" class="border-2" /> -->
+        <div
+          v-if="viewMode === 'week'"
+          class="relative p-px bg-linear-to-b from-gray-300 to-gray-100 shadow-sm"
+        ></div>
+        <!-- <MonthlyDietView v-else :selectedMonth="selectedMonth" /> -->
+        <MonthlyDietView
+          v-else
+          :selectedMonth="selectedMonth"
+          @dateClick="handleCalendarDateClick"
+        />
+
+        <DietCalendarModal
+          :is-visible="isCalendarModalOpen"
+          :selected-date="calendarSelectedDate"
+          :diets="dailyDietMap[selectedDateString] || []"
+          @close="isCalendarModalOpen = false"
+        />
+        <div class="rounded-lg">
+          <!-- border-2 border-[#79ae70] my-4 -->
+          <MealTypeTabs v-if="viewMode === 'week'" v-model="selectedMealType" />
+
+          <DietList
+            v-if="viewMode === 'week'"
+            :diets="dietByMealType[selectedMealType]"
+            :mealLabel="mealLabelMap[selectedMealType]"
+            @itemClick="handleDietClick"
+          />
+        </div>
+
+        <DietDetailModal
+          v-if="viewMode === 'week'"
+          :is-visible="isDetailModalOpen"
+          :diet="selectedDietForDetail || {}"
+          :meal-label="mealLabelMap[selectedMealType]"
+          @close="isDetailModalOpen = false"
         />
       </div>
 
-      <DietDetailModal
-        v-if="viewMode === 'week'"
-        :is-visible="isDetailModalOpen"
-        :diet="selectedDietForDetail || {}"
-        :meal-label="mealLabelMap[selectedMealType]"
-        @close="isDetailModalOpen = false"
-      />
-
       <button
         @click="isOptionModalVisible = true"
-        class="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-[#8A8F6E] text-white shadow-xl hover:bg-[#6e7256] transition z-40"
+        class="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-[#8A8F6E] text-white shadow-xl hover:bg-[#6e7256] transition z-40 cursor-pointer"
       >
         <PlusIcon class="w-8 h-8 mx-auto" />
       </button>
@@ -93,6 +95,7 @@ import DietList from '@/components/diet/DietList.vue';
 import CreateDietFormOptionModal from '@/components/diet/CreateDietFormOptionModal.vue';
 import DietDetailModal from '@/components/diet/DietDetailModal.vue';
 import DietCalendarModal from '@/components/diet/DietCalendarModal.vue';
+import TodayNutritions from '@/components/dashboard/nutrition/TodayNutritions.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -202,7 +205,15 @@ watch(
 // --- Handlers ---
 const handleSelectOption = option => {
   const methodParam = option === 'manual' ? 'manual' : 'public-api';
-  router.push({ name: 'createDiet', params: { method: methodParam } });
+
+  // 💡 수정하기 로직과 이름을 동일하게 'dietForm'으로 맞춥니다.
+  router.push({
+    name: 'dietForm', // 'createDiet' 대신 'dietForm' 사용
+    params: {
+      method: methodParam,
+      // 등록할 때는 id를 보내지 않습니다.
+    },
+  });
 };
 
 const handleDietClick = async diet => {

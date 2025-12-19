@@ -15,6 +15,7 @@ import DashBoardPage from '@/pages/DashBoardPage.vue';
 import DietPage from '@/pages/DietPage.vue';
 import UserHealthInfoPage from '@/pages/unused/UserHealthInfoPage.vue';
 import CreateDietFormPage from '@/pages/CreateDietFormPage.vue';
+import HandleSubmitDietForm from '@/components/diet/formElements/HandleSubmitDietForm.vue';
 
 const routes = [
   {
@@ -74,8 +75,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/diet/create-diet/:method',
-    name: 'createDiet',
+    path: '/diet/form/:method/:id?',
+    name: 'dietForm',
     component: CreateDietFormPage,
     meta: { requiresAuth: true },
   },

@@ -1,17 +1,17 @@
 <template>
-  <div class="h-auto p-6 sm:p-6 flex justify-center">
-    <div class="w-full max-w-4xl bg-white rounded-xl shadow-xl p-6 sm:p-8">
-      <div class="mb-3">
+  <div class="h-auto p-6 sm:p-6 flex justify-center bg-[#f9f9f5] min-h-screen">
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-6 sm:p-8">
+      <div class="mb-5">
         <button
-          @click="goBackToDashboard"
-          class="flex items-center text-gray-600 hover:text-[#8A8F6E] transition font-medium"
+          @click="goBack"
+          class="flex items-center text-gray-400 hover:text-[#8A8F6E] transition font-bold text-sm"
         >
           <ArrowLeftIcon class="w-5 h-5 mr-1" />
-          <span>이전</span>
+          <span>뒤로가기</span>
         </button>
       </div>
 
-      <HandleSubmitDietForm :mode="creationMethod" />
+      <HandleSubmitDietForm :mode="creationMethod" :diet-id="dietId" />
     </div>
   </div>
 </template>
@@ -25,20 +25,13 @@ import HandleSubmitDietForm from '@/components/diet/formElements/HandleSubmitDie
 const router = useRouter();
 const route = useRoute();
 
-/**
- * URL 매개변수에서 현재 식단 작성 모드를 가져옵니다.
- * 'manual' 또는 'public-api' 값을 가집니다.
- */
+// URL의 :method 파라미터 ('manual' 또는 'public-api')
 const creationMethod = computed(() => route.params.method);
 
-/**
- * 대시보드 화면으로 돌아갑니다.
- */
-const goBackToDashboard = () => {
-  router.push({ name: 'dashBoard' });
+// URL의 :id 파라미터 (수정 시에만 존재)
+const dietId = computed(() => route.params.id);
+
+const goBack = () => {
+  router.back(); // 단순히 대시보드가 아니라 이전 페이지(캘린더 등)로 이동
 };
 </script>
-
-<style scoped>
-/* 페이지 스타일 */
-</style>

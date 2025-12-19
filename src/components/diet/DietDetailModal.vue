@@ -119,6 +119,7 @@
           삭제
         </button>
         <button
+          @click="handleEdit"
           class="flex-1 py-3 rounded-xl bg-[#8A8F6E] text-white font-bold hover:bg-[#6e7256] transition"
         >
           수정하기
@@ -130,7 +131,9 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
+import { useDietStore } from '@/stores/Diet';
 
 const props = defineProps({
   isVisible: Boolean,
@@ -139,6 +142,8 @@ const props = defineProps({
 });
 
 defineEmits(['close']);
+const router = useRouter();
+const dietStore = useDietStore();
 
 // 합산 로직 (받아온 diet 객체 내부의 foods 기준)
 const totalNutrition = computed(() => {
@@ -175,6 +180,22 @@ const formattedDate = computed(() => {
     weekday: 'short',
   });
 });
+
+const handleEdit = diet => {
+  // 예: 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
+  if (!props.diet) return;
+
+  // sourceType이 대문자일 경우를 대비해 처리
+  const method = props.diet.sourceType === 'MANUAL' ? 'manual' : 'public-api';
+
+  router.push({
+    name: 'dietForm',
+    params: {
+      method: method,
+      id: props.diet.id,
+    },
+  });
+};
 
 const handleDelete = async () => {
   if (!props.diet?.id) return;

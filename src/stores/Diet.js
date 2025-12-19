@@ -182,6 +182,32 @@ export const useDietStore = defineStore('diet', () => {
   }
 
   /**
+   * 식단 수정 (PUT /api/diets/{dietId})
+   */
+  async function updateDiet(dietId, updateData) {
+    isLoading.value = true;
+    try {
+      const response = await axios.put(`${BASE_URL}/${dietId}`, updateData, {
+        withCredentials: true,
+      });
+
+      // 수정 성공 시 dailyDietMap 동기화 로직 (선택)
+      const dateKey = updateData.date.split('T')[0];
+      if (dailyDietMap.value[dateKey]) {
+        // 기존 맵에서 해당 데이터만 교체하거나 다시 fetch
+        await fetchDietForDay(dateKey);
+      }
+
+      return response.data;
+    } catch (err) {
+      console.error('스토어: 식단 수정 실패', err);
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
    * 식단 삭제 (DELETE /api/diets/{dietId})
    */
   async function deleteDiet(dietId, dateString) {
@@ -239,7 +265,7 @@ export const useDietStore = defineStore('diet', () => {
     fetchDietDetail,
     fetchMonthDiets,
     fetchDietNutrition,
+    updateDiet,
     deleteDiet,
-    // TODO: updateDiet, deleteDiet
   };
 });

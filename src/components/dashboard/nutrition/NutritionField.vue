@@ -1,80 +1,85 @@
 <template>
   <div
     :class="[
-      'p-5 rounded-xl shadow-lg border',
+      'p-5 rounded-xl shadow-sm border transition-all duration-300',
+      'cursor-pointer hover:shadow-lg',
       styles.lightBgClass,
-      'border-gray-200',
+      isExceeded ? 'border-red-200' : 'border-gray-200',
     ]"
   >
     <div class="flex items-center justify-between mb-3">
-      <div
-        :class="[
-          'flex items-center space-x-2 py-1 px-3 rounded-full text-xs font-bold shadow-sm',
-          styles.mainClass,
-        ]"
-      >
-        <component :is="styles.icon" class="w-4 h-4" />
-        <span>{{ title }}</span>
+      <div class="flex items-center space-x-2">
+        <div
+          :class="[
+            'flex items-center space-x-2 py-1 px-3 rounded-full text-xs font-bold shadow-sm',
+            styles.mainClass,
+          ]"
+        >
+          <component :is="styles.icon" class="w-4 h-4" />
+          <span>{{ title }}</span>
+        </div>
+
+        <ExclamationTriangleIcon
+          v-if="isExceeded"
+          class="w-5 h-5 text-red-500 animate-pulse"
+        />
       </div>
+
+      <!-- <span
+        class="text-sm font-bold"
+        :class="
+          isExceeded
+            ? 'text-red-600'
+            : styles.mainClass.split(' ')[0].replace('bg-', 'text-')
+        "
+      >
+        {{ Math.round(progressPercent) }}%
+      </span> -->
     </div>
 
-    <div class="text-2xl font-extrabold mt-1 text-gray-800">
+    <div class="text-2xl font-extrabold mt-1 text-gray-800 flex items-baseline">
       {{ consumed }}
-      <span class="text-base font-normal text-gray-500">{{ unit }}</span>
+      <span class="text-base font-normal text-gray-500 ml-1">{{ unit }}</span>
     </div>
 
-    <div class="text-xs text-gray-600 mt-2">
-      권장 목표: {{ goal }} {{ unit }}
+    <div class="text-xs text-gray-400 mt-2 font-medium">
+      권장 목표: {{ goal }}{{ unit }}
     </div>
 
-    <div class="mt-4 h-2 rounded-full bg-gray-200 overflow-hidden">
+    <div class="mt-4 h-2 rounded-full bg-white overflow-hidden shadow-inner">
       <div
         :class="[
-          'h-full rounded-full transition-all duration-500',
-          styles.mainClass.split(' ')[0],
+          'h-full rounded-full transition-all duration-700 ease-out ',
+          isExceeded ? 'bg-red-500' : styles.mainClass.split(' ')[0],
         ]"
         :style="progressBarWidth"
-      >
-        <span
-          class="text-sm font-semibold"
-          :class="[styles.mainClass.split(' ')[0].replace('bg-', 'text-')]"
-        >
-          {{ Math.round(progressPercent) }}%
-        </span>
-      </div>
+      ></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
-
-// 💡 Heroicons 임포트 (사용자 환경에 맞게 경로 수정 필요)
-import FireIcon from '@heroicons/vue/24/solid/FireIcon'; // Kcal (에너지)
-import CubeIcon from '@heroicons/vue/24/solid/CubeIcon'; // 탄수화물 (구조/복합)
-import CircleStackIcon from '@heroicons/vue/24/solid/CircleStackIcon'; // 단백질 (구성/빌딩 블록)
-import BeakerIcon from '@heroicons/vue/24/solid/BeakerIcon'; // 지방 (화학/저장)
+import { computed } from 'vue';
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/solid';
+import {
+  FireIcon,
+  CubeIcon,
+  CircleStackIcon,
+  BeakerIcon,
+} from '@heroicons/vue/24/solid';
 
 const props = defineProps({
   title: String,
-  consumed: [String, Number],
-  goal: [String, Number],
+  consumed: [Number, String],
+  goal: [Number, String],
   unit: String,
-  type: {
-    type: String, // 'kcal', 'carb', 'protein', 'fat'
-    required: true,
-  },
-  // 서버에서 받은 RDI 대비 섭취량 퍼센트 (0~100)
-  progressPercent: {
-    type: Number,
-    default: 0,
-  },
+  type: String,
+  progressPercent: { type: Number, default: 0 },
 });
 
-/**
- * 영양소 타입에 따라 아이콘, 메인 색상, 라이트 배경색을 매핑합니다.
- * 사용자 정의 색상 클래스를 사용합니다.
- */
+// 목표 초과 여부 확인
+const isExceeded = computed(() => Number(props.consumed) > Number(props.goal));
+
 const getStyles = type => {
   switch (type) {
     case 'kcal':
@@ -111,11 +116,13 @@ const getStyles = type => {
 };
 
 const styles = computed(() => getStyles(props.type));
-
-// 진행바 너비 계산 (Tailwind의 임의 값 사용)
-const progressBarWidth = computed(() => {
-  // 100%를 초과해도 100%로 표시
-  const percent = Math.min(props.progressPercent, 100);
-  return `width: ${percent}%`;
-});
+const progressBarWidth = computed(
+  () => `width: ${Math.min(props.progressPercent, 100)}%`,
+);
 </script>
+
+<style scoped>
+.progress-inner-shadow {
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+</style>

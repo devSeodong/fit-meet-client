@@ -4,7 +4,7 @@
     <button
       v-for="m in meals"
       :key="m.type"
-      class="flex-1 py-2"
+      class="flex-1 py-2 cursor-pointer"
       :class="
         modelValue === m.type
           ? 'green-bg-color text-white '

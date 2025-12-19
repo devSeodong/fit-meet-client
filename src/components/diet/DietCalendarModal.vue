@@ -63,6 +63,7 @@
               </div>
               <div class="flex space-x-1">
                 <button
+                  @click="handleEdit(diet)"
                   class="p-2 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full transition"
                 >
                   <PencilSquareIcon class="w-5 h-5" />
@@ -175,7 +176,7 @@
           </div>
           <button
             @click="goToCreate"
-            class="px-8 py-3 bg-[#8A8F6E] text-white rounded-full font-black hover:bg-[#6e7256] shadow-lg transition"
+            class="px-8 py-3 bg-[#8A8F6E] text-white rounded-full font-black hover:bg-[#6e7256] cursor-pointer shadow-lg transition"
           >
             식단 추가하러가기
           </button>
@@ -299,7 +300,20 @@ watch(
 );
 
 const goToCreate = () => {
-  router.push({ name: 'createDiet', params: { method: 'public-api' } });
+  router.push({ name: 'dietForm', params: { method: 'public-api' } });
+};
+
+const handleEdit = diet => {
+  // 예: 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
+  const method = diet.sourceType === 'MANUAL' ? 'manual' : 'public-api';
+
+  router.push({
+    name: 'dietForm',
+    params: {
+      method: method,
+      id: diet.id,
+    },
+  });
 };
 
 const handleDelete = async dietId => {

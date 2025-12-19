@@ -331,7 +331,6 @@ export const useAuthStore = defineStore('auth', () => {
     signout,
     refreshAccessToken,
     resetAuthState,
-    // refreshAccessTokenAndUserInfo,
   };
 });
 function setupInterceptors(apiInstance, resetAuthState) {
@@ -368,77 +367,3 @@ function setupInterceptors(apiInstance, resetAuthState) {
     },
   );
 }
-// function setupInterceptors(apiInstance, resetAuthState) {
-//   apiInstance.interceptors.response.use(
-//     res => res,
-//     async error => {
-//       const originalRequest = error.config;
-//       const errorCode = error.response?.data?.code;
-
-//       // 🔥 Access Token 만료
-//       if (
-//         (error.response?.status === 403 || error.response?.status === 401) &&
-//         // errorCode === 1002 &&
-//         !originalRequest._retry
-//       ) {
-//         originalRequest._retry = true;
-
-//         try {
-//           await refreshAccessToken();
-
-//           return apiInstance(originalRequest);
-//         } catch (e) {
-//           resetAuthState();
-//           return Promise.reject(e);
-//         }
-//       }
-
-//       // 🔥 Refresh Token 만료
-//       if (errorCode === 1005) {
-//         resetAuthState();
-//       }
-
-//       return Promise.reject(error);
-//     },
-//   );
-// }
-// 💡 4. 인터셉터 로직 분리 및 에러 코드 기반 처리
-// function setupInterceptors(apiInstance, refreshCallback) {
-//   apiInstance.interceptors.response.use(
-//     response => response,
-//     async error => {
-//       const authStore = useAuthStore();
-//       const originalRequest = error.config;
-//       const errorCode = error.response?.data?.code; // 커스텀 에러 코드 추출
-
-//       // Access Token 만료 코드(1002) & 재시도 아님 & 401 에러일 때
-//       if (
-//         error.response?.status === 401 &&
-//         errorCode === 1002 &&
-//         !originalRequest._isRetry
-//       ) {
-//         originalRequest._isRetry = true;
-
-//         try {
-//           // 리프레시 시도 (성공하면 새로운 Access Token 쿠키로 설정됨)
-//           await refreshCallback();
-//           // 원본 요청 재시도
-//           return apiInstance(originalRequest);
-//         } catch (refreshError) {
-//           // 리프레시 실패 (Refresh Token 만료 등):
-//           // 이 시점에서 authStore.isLoggedIn은 이미 false로 설정됨
-//           return Promise.reject(error); // 최종 실패 에러 전파
-//         }
-//       }
-
-//       // Refresh Token 만료 코드(1005) 등 다른 인증 오류 발생 시 (혹은 refreshCallback에서 에러 발생 시)
-//       // 상태를 강제로 로그아웃 처리하고 에러 전파
-//       if (errorCode === 1005) {
-//         authStore.isLoggedIn = false;
-//         authStore.userInfo = {};
-//       }
-
-//       return Promise.reject(error);
-//     },
-//   );
-// }

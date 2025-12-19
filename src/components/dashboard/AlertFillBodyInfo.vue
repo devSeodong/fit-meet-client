@@ -7,7 +7,7 @@
       <InformationCircleIcon class="w-5 h-5" />신체 정보 미작성 알림
     </p>
     <div class="flex flex-row items-center">
-      <p class="text-sm mr-4 text-yellow-600">
+      <p class="hidden text-sm mr-4 text-yellow-600 md:block">
         ※ 일일 권장 섭취량 계산을 위해 추가 정보 작성이 필요합니다.
 
         <!-- <a

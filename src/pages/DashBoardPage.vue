@@ -22,7 +22,7 @@
       <!-- <WriteDietBoardBtn /> -->
       <button
         @click="isOptionModalVisible = true"
-        class="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-[#8A8F6E] text-white shadow-xl hover:bg-[#6e7256] transition z-40"
+        class="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-[#8A8F6E] text-white shadow-xl hover:bg-[#6e7256] transition z-40 cursor-pointer"
       >
         <PlusIcon class="w-8 h-8 mx-auto" />
       </button>
@@ -78,7 +78,7 @@ const handleSelectOption = option => {
 
   // 💡 라우팅 실행: name과 params를 사용하여 이동
   router.push({
-    name: 'createDiet', // 라우터에 정의한 이름
+    name: 'dietForm', // 라우터에 정의한 이름
     params: {
       method: methodParam, // URL에 들어갈 값 (manual 또는 public-api)
     },

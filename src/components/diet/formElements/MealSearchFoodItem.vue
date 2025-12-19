@@ -8,7 +8,8 @@
           food.foodNmKr
         }}</span>
         <span class="text-xs text-gray-500 mt-0.5">
-          카테고리: {{ food.category }} | 출처: {{ food.sourceType }}
+          카테고리: {{ food.category }}
+          <!-- | 출처: {{ food.sourceType }} -->
         </span>
         <span class="text-xs text-gray-500 mt-0.5">
           기본 제공량: {{ food.servingSizeRaw || '정보 없음' }}
