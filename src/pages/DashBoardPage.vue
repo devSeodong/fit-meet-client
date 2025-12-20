@@ -13,7 +13,14 @@
         </div>
 
         <div class="lg:col-span-3 grid grid-cols-1 gap-6">
-          <AiAnalysisCard class="h-62" />
+          <AiAnalysisCard @analysis-complete="openAiModal" />
+
+          <AiAnalysisModal
+            v-if="aiModalData"
+            :is-visible="isAiModalOpen"
+            :data="aiModalData"
+            @close="isAiModalOpen = false"
+          />
 
           <MyStreak class="h-112" />
         </div>
@@ -45,10 +52,11 @@ import TotalScores from '@/components/dashboard/score/TotalScores.vue';
 import CreateDietFormOptionModal from '@/components/diet/CreateDietFormOptionModal.vue';
 import { PlusIcon } from '@heroicons/vue/24/outline';
 import { ref, reactive, computed } from 'vue';
-import { useRouter } from 'vue-router'; // useRouter 임포트 필요
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/Auth';
+import AiAnalysisModal from '@/components/dashboard/AiAnalysisModal.vue';
 
-const router = useRouter(); // router 인스턴스 생성
+const router = useRouter();
 
 const authStore = useAuthStore();
 const isOptionModalVisible = ref(false);
@@ -57,11 +65,14 @@ const handleSelectOption = option => {
   let methodParam;
 
   if (option === 'manual') {
-    // URL: /diet/create-diet/manual
+    // URL: /diet/form/manual
     methodParam = 'manual';
   } else if (option === 'public-api') {
-    // URL: /diet/create-diet/public-api
+    // URL: /diet/form/public-api
     methodParam = 'public-api';
+  } else if (option === 'image') {
+    // URL: /diet/form/image
+    methodParam = 'image';
   } else {
     return;
   }
@@ -71,5 +82,13 @@ const handleSelectOption = option => {
       method: methodParam,
     },
   });
+};
+
+const isAiModalOpen = ref(false);
+const aiModalData = ref(null);
+
+const openAiModal = data => {
+  aiModalData.value = data;
+  isAiModalOpen.value = true;
 };
 </script>

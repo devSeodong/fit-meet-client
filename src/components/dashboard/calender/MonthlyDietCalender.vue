@@ -32,6 +32,4 @@
   </div>
 </template>
 
-<script setup>
-// 월간 캘린더 로직 (날짜 계산 및 식단 데이터 연동) 코드가 추가됩니다.
-</script>
+<script setup></script>

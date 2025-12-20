@@ -120,6 +120,7 @@ export const useDietStore = defineStore('diet', () => {
       console.log('월간 데이터 로드 완료:', grouped);
     } catch (err) {
       console.error('월간 데이터 조회 실패:', err);
+      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -214,6 +215,51 @@ export const useDietStore = defineStore('diet', () => {
       isLoading.value = false;
     }
   }
+  // S3 업로드를 위한 URL 발급
+  async function getPresignedUrl(filename) {
+    isLoading.value = true;
+    error.value = null; // 이전 에러 초기화
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/diet/images/presign`,
+        {
+          params: { filename },
+          withCredentials: true,
+        },
+      );
+
+      // 백엔드 응답 구조에 따라 response.data.data가 될 수도 있으니 확인 필요
+      return response.data;
+    } catch (err) {
+      error.value = '이미지 업로드 권한을 가져오지 못했습니다.';
+      console.error('스토어: Presigned URL 발급 실패', err);
+
+      // 인터셉터가 401/403을 처리하겠지만,
+      // 여기서도 reject를 던져서 컴포넌트가 업로드 프로세스를 중단하게 합니다.
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // GPT Vision 분석 요청
+  async function analyzeImage(imageUrl) {
+    isLoading.value = true;
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/diet/images/analyze`,
+        null,
+        {
+          params: { imageUrl },
+          withCredentials: true,
+        },
+      );
+      return response.data; // 분석 결과 아이템 리스트
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   return {
     // State
@@ -233,5 +279,7 @@ export const useDietStore = defineStore('diet', () => {
     fetchDietNutrition,
     updateDiet,
     deleteDiet,
+    getPresignedUrl,
+    analyzeImage,
   };
 });

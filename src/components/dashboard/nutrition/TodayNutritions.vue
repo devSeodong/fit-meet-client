@@ -126,7 +126,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 프로그레스 바 내부 그림자 효과 */
 .progress-inner-shadow {
   box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }

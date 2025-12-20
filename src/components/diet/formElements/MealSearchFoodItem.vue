@@ -3,7 +3,7 @@
     <div
       class="p-3 border-b border-gray-100 last:border-b-0 flex justify-between items-start bg-white hover:bg-gray-50 transition rounded-lg"
     >
-      <div class="flex flex-col flex-grow min-w-0 pr-4">
+      <div class="flex flex-col grow min-w-0 pr-4">
         <span class="text-base font-medium text-gray-700 truncate">{{
           food.foodNmKr
         }}</span>
@@ -19,7 +19,7 @@
       <button
         v-if="!isEditing"
         @click="startEdit"
-        class="bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition flex-shrink-0"
+        class="cursor-pointer bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-green-700 transition shrink-0"
       >
         추가
       </button>
@@ -27,7 +27,7 @@
       <button
         v-else
         @click="cancelEdit"
-        class="bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-500 transition flex-shrink-0"
+        class="cursor-pointer bg-gray-400 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-gray-500 transition shrink-0"
       >
         취소
       </button>
@@ -55,7 +55,7 @@
         <button
           @click="confirmAdd"
           :disabled="isProcessing || currentIntake <= 0"
-          class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-700 transition shrink-0 disabled:bg-gray-300"
+          class="cursor-pointer bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-700 transition shrink-0 disabled:bg-gray-300"
         >
           {{ isProcessing ? '처리 중...' : '확인' }}
         </button>

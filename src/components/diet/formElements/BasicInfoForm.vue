@@ -27,7 +27,7 @@
             type="button"
             @click="updateMealType(type.value)"
             :class="mealTypeButtonClasses(type.value)"
-            class="flex-1 min-w-0"
+            class="flex-1 min-w-0 cursor-pointer"
           >
             {{ type.label }}
           </button>
@@ -44,7 +44,7 @@
         :value="formData.description"
         @input="updateDescription($event.target.value)"
         rows="3"
-        class="input-style min-h-[100px]"
+        class="input-style min-h-[100px] cursor-pointer"
         placeholder="오늘 식사에 대한 간단한 메모를 남겨주세요."
       ></textarea>
     </div>
@@ -59,7 +59,7 @@
       />
       <label
         for="is-public"
-        class="ml-3 block text-base font-medium text-gray-700"
+        class="ml-3 block text-base font-medium text-gray-700 cursor-pointer"
         >커뮤니티에 식단 공개</label
       >
     </div>

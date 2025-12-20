@@ -62,7 +62,7 @@ const sendEmail = async () => {
   }
 
   isLoading.value = true;
-  emailStatus.value = ''; // 상태 초기화
+  emailStatus.value = '';
   emailMsg.value = '';
 
   try {
@@ -85,10 +85,8 @@ const sendEmail = async () => {
 </script>
 
 <style scoped>
-/* 🚨 로딩 스피너 CSS */
 .spinner {
   border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top: 3px solid #ffffff; /* 스피너 색상 */
   border-radius: 50%;
   width: 16px;
   height: 16px;

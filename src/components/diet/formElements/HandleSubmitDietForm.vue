@@ -38,7 +38,7 @@
               v-if="step > 1"
               @click="prevStep"
               :disabled="isSubmitting"
-              class="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition disabled:opacity-50"
+              class="cursor-pointer flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition disabled:opacity-50"
             >
               <ArrowLeftIcon class="h-5 w-5" /> 이전
             </button>
@@ -49,7 +49,7 @@
                 v-if="step < components.length"
                 @click="nextStep"
                 :disabled="!isCurrentStepValid || isSubmitting"
-                class="flex items-center gap-2 px-8 py-3 rounded-full bg-[#8A8F6E] text-white font-semibold hover:bg-[#6e7256] transition shadow-lg disabled:bg-gray-400"
+                class="cursor-pointer flex items-center gap-2 px-8 py-3 rounded-full bg-[#8A8F6E] text-white font-semibold hover:bg-[#6e7256] transition shadow-lg disabled:bg-gray-400"
               >
                 다음 <ArrowRightIcon class="h-5 w-5" />
               </button>
@@ -58,7 +58,7 @@
                 v-if="step === components.length"
                 @click="submitDiet"
                 :disabled="!isCurrentStepValid || isSubmitting"
-                class="px-8 py-3 rounded-full bg-green-700 text-white font-semibold hover:bg-green-800 transition shadow-lg shadow-green-600/40 disabled:bg-gray-400"
+                class="cursor-pointer px-8 py-3 rounded-full bg-green-700 text-white font-semibold hover:bg-green-800 transition shadow-lg shadow-green-600/40 disabled:bg-gray-400"
               >
                 <template v-if="isSubmitting">처리 중...</template>
                 <template v-else>{{
@@ -75,15 +75,23 @@
 
 <script setup>
 import { ref, reactive, computed, markRaw, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router'; // useRoute 추가
+import { useRouter, useRoute } from 'vue-router';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
 
 import BasicInfoForm from './BasicInfoForm.vue';
 import ManualFoodInput from './ManualFoodInput.vue';
 import MealFoodLayout from './MealFoodLayout.vue';
 import FinalReviewForm from './FinalReviewForm.vue';
+import AIImageAnalysisForm from './AIImageAnalysisForm.vue';
 import { useDietStore } from '@/stores/Diet';
 import { useMealStore } from '@/stores/Meal';
+
+// 3개의 식단 업로드 모드 지정
+const MODE_TO_SOURCE_TYPE = {
+  manual: 'MANUAL',
+  'public-api': 'PUBLIC-API',
+  image: 'IMAGE',
+};
 
 const props = defineProps({
   mode: {
@@ -116,7 +124,8 @@ const formData = reactive({
   description: '',
   imageUrl: '',
   isPublic: false,
-  sourceType: props.mode === 'manual' ? 'MANUAL' : 'PUBLIC-API',
+  // sourceType: props.mode === 'manual' ? 'MANUAL' : 'PUBLIC-API',
+  sourceType: MODE_TO_SOURCE_TYPE[props.mode] || 'MANUAL',
   foods: [],
 });
 
@@ -156,7 +165,8 @@ function resetForm() {
     description: '',
     imageUrl: '',
     isPublic: false,
-    sourceType: props.mode === 'manual' ? 'MANUAL' : 'PUBLIC-API',
+    // sourceType: props.mode === 'manual' ? 'MANUAL' : 'PUBLIC-API',
+    sourceType: MODE_TO_SOURCE_TYPE[props.mode] || 'MANUAL',
     foods: [],
   });
 }
@@ -164,27 +174,59 @@ function resetForm() {
 const updateFormData = newFormData => Object.assign(formData, newFormData);
 
 const components = computed(() => {
-  const list =
-    props.mode === 'manual'
-      ? [BasicInfoForm, ManualFoodInput, FinalReviewForm]
-      : [BasicInfoForm, MealFoodLayout, FinalReviewForm];
-  return markRaw(list);
+  if (props.mode === 'manual') {
+    return [
+      markRaw(BasicInfoForm),
+      markRaw(ManualFoodInput),
+      markRaw(FinalReviewForm),
+    ];
+  } else if (props.mode === 'public-api') {
+    return [
+      markRaw(BasicInfoForm),
+      markRaw(MealFoodLayout),
+      markRaw(FinalReviewForm),
+    ];
+  } else if (props.mode === 'image') {
+    return [
+      markRaw(BasicInfoForm),
+      markRaw(AIImageAnalysisForm),
+      markRaw(FinalReviewForm),
+    ];
+  }
+  return [];
 });
 
-const stepTitles = computed(() => [
-  '식사한 날짜와 시간을 입력해주세요',
-  props.mode === 'manual'
-    ? '음식 내용을 직접 기록해주세요'
-    : '음식을 검색하여 기록해주세요',
-  '최종 확인 및 코멘트를 남겨주세요',
-]);
+const stepTitles = computed(() => {
+  const modeMessages = {
+    manual: '음식 내용을 직접 기록해주세요',
+    'public-api': '음식을 검색하여 기록해주세요',
+    image: 'AI 이미지 분석으로 기록해주세요',
+  };
+  return [
+    '식사한 날짜와 시간을 입력해주세요',
+    modeMessages[props.mode] || '음식 정보를 입력해주세요', // 혹시 모를 예외 처리
+    '최종 확인 및 코멘트를 남겨주세요',
+  ];
+});
 
 const currentComponent = computed(() => components.value[step.value - 1]);
 const progressBarWidth = computed(
   () => `${(step.value / components.value.length) * 100}%`,
 );
+// const isCurrentStepValid = computed(() => {
+//   if (step.value === 2) return formData.foods.length > 0;
+//   return true;
+// });
 const isCurrentStepValid = computed(() => {
-  if (step.value === 2) return formData.foods.length > 0;
+  if (step.value === 2) {
+    const hasFoods = formData.foods.length > 0;
+
+    if (props.mode === 'image') {
+      return hasFoods && !!formData.imageUrl;
+    }
+
+    return hasFoods;
+  }
   return true;
 });
 
@@ -248,7 +290,10 @@ async function submitDiet() {
 function nextStep() {
   if (isCurrentStepValid.value && step.value < components.value.length)
     step.value++;
-  else alert('현재 단계를 먼저 완성해주세요.');
+  else {
+    console.log('현재상태: ', formData);
+    alert('현재 단계를 먼저 완성해주세요.');
+  }
 }
 
 function prevStep() {

@@ -11,6 +11,8 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const weekScoreData = ref(null);
   const monthScoreData = ref(null);
 
+  const aiAnalysisResult = ref(null);
+
   //오늘의 영양소 조회(/today-nutrition)
   const fetchTodayNutrition = async () => {
     loading.value = true;
@@ -23,6 +25,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       }
     } catch (error) {
       console.error('오늘의 영양소 조회 실패:', error);
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -32,6 +35,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const fetchWeekScore = async (
     endDate = new Date().toISOString().split('T')[0],
   ) => {
+    console.log(endDate);
     try {
       const response = await axios.get(`${BASE_URL}/score-week`, {
         params: { endDate },
@@ -40,6 +44,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
       if (response.data.code === 0) weekScoreData.value = response.data.data;
     } catch (error) {
       console.error('주간 점수 조회 실패:', error);
+      throw error;
     }
   };
 
@@ -53,9 +58,12 @@ export const useDashboardStore = defineStore('dashboard', () => {
         params: { year, month },
         withCredentials: true,
       });
+      console.log(response);
       if (response.data.code === 0) monthScoreData.value = response.data.data;
     } catch (error) {
       console.error('월간 점수 조회 실패:', error);
+
+      // throw error;
     }
   };
 
@@ -70,14 +78,43 @@ export const useDashboardStore = defineStore('dashboard', () => {
     };
   });
 
+  const fetchAiWeeklyAnalysis = async (
+    endDate = new Date().toISOString().split('T')[0],
+  ) => {
+    // [테스트용 캐싱] 이미 결과가 있다면 API 호출 없이 반환 (추후 삭제 가능)
+    // if (aiAnalysisResult.value) {
+    //   console.log(aiAnalysisResult.value);
+    //   return aiAnalysisResult.value;
+    // }
+
+    loading.value = true;
+    try {
+      const response = await axios.post(`${BASE_URL}/ai-weekly`, null, {
+        params: { endDate },
+        withCredentials: true,
+      });
+      if (response.data.code === 0) {
+        aiAnalysisResult.value = response.data.data;
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error('AI 분석 실패:', error);
+      throw error;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     todayNutrition,
     loading,
     weekScoreData,
     monthScoreData,
+    aiAnalysisResult,
     fetchTodayNutrition,
     fetchWeekScore,
     fetchMonthScore,
     nutrientGoals,
+    fetchAiWeeklyAnalysis,
   };
 });

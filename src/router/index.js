@@ -1,4 +1,3 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 
 // 페이지 컴포넌트 import
@@ -96,11 +95,17 @@ const whiteList = ['login', 'signup', 'passwordReset'];
 router.beforeEach(async (to, from, next) => {
   const store = useAuthStore();
   // 인증 필요 없는 페이지 확인용
+  if (!store.isLoggedIn && !store.authChecked) {
+    await store.fetchBasicUserInfo();
+  }
+
+  // 2. 이미 로그인한 사용자가 화이트리스트(로그인, 회원가입 등) 접근 시 대시보드로 리다이렉트
+  if (whiteList.includes(to.name) && store.isLoggedIn) {
+    return next({ name: 'dashBoard' });
+  }
+
+  // 3. 인증이 필요 없는 페이지(로그인, 회원가입 등)는 그냥 통과
   if (!to.meta.requiresAuth) {
-    // 이미 로그인한 사용자가 로그인/회원가입 페이지 접근 시
-    if (store.isLoggedIn && whiteList.includes(to.name)) {
-      return next({ name: 'dashBoard' });
-    }
     return next();
   }
 

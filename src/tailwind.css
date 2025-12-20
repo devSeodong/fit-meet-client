@@ -199,3 +199,14 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   filter: invert(43%) sepia(10%) saturate(1610%) hue-rotate(69deg)
     brightness(84%) contrast(85%);
 }
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
+
+  /* 비활성화된 버튼은 커서가 기본형(또는 금지)으로 나오게 방지 */
+  button:disabled {
+    cursor: default;
+  }
+}

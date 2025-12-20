@@ -13,19 +13,27 @@
 
       <div class="space-y-4">
         <button
-          @click="selectOption('manual')"
-          class="w-full flex items-center justify-center p-4 bg-[#8A8F6E] text-white font-semibold rounded-lg hover:bg-[#6e7256] transition-colors shadow-md"
+          @click="selectOption('image')"
+          class="w-full flex items-center justify-center p-4 cursor-pointer bg-linear-to-r from-[#91bdaa] via-[#7aaab3] to-[#6da2c3] text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg hover:scale-[1.02] active:scale-[0.98]"
         >
-          <PencilSquareIcon class="w-6 h-6 mr-3" />
-          <span>식단 직접 입력</span>
+          <SparklesIcon class="w-6 h-6 mr-3 text-white animate-pulse" />
+          <span>AI 이미지로 분석하기</span>
         </button>
 
         <button
           @click="selectOption('public-api')"
-          class="w-full flex items-center justify-center p-4 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors shadow-md border border-gray-300"
+          class="w-full flex items-center justify-center p-4 cursor-pointer bg-[#7d92b0] text-white font-semibold rounded-xl hover:bg-[#667fa2] transition-colors shadow-md"
         >
           <MagnifyingGlassIcon class="w-6 h-6 mr-3" />
           <span>음식 검색으로 추가</span>
+        </button>
+
+        <button
+          @click="selectOption('manual')"
+          class="w-full flex items-center justify-center p-4 cursor-pointer bg-[#eaeef4] text-slate-600 font-semibold rounded-xl hover:bg-slate-200 transition-colors border border-slate-200 shadow-sm"
+        >
+          <PencilSquareIcon class="w-6 h-6 mr-3 text-slate-400" />
+          <span>식단 직접 입력</span>
         </button>
       </div>
 
@@ -45,6 +53,7 @@
 import {
   PencilSquareIcon,
   MagnifyingGlassIcon,
+  SparklesIcon,
 } from '@heroicons/vue/24/outline';
 import { defineProps, defineEmits } from 'vue';
 

@@ -10,9 +10,9 @@ const getAccessToken = () => {
 
 export const useMealStore = defineStore('meal', () => {
   // === STATE (상태) ===
-  const searchResults = ref([]); // 검색 결과 목록
-  const isLoading = ref(false); // 로딩 상태
-  const searched = ref(false); // 검색이 한 번이라도 수행되었는지 여부
+  const searchResults = ref([]);
+  const isLoading = ref(false);
+  const searched = ref(false);
 
   // === ACTIONS (함수) ===
   function clearSearch() {
@@ -72,8 +72,8 @@ export const useMealStore = defineStore('meal', () => {
         foodCode: meal.foodCd,
         sourceType: meal.sourceType,
 
-        // Nutrition 정보 (기준량당)
-        intakeGram: nutritionData.baseAmountG, // 기본 섭취량을 기준량(baseAmountG)으로 설정
+        // Nutrition 정보
+        intakeGram: nutritionData.baseAmountG,
         kcal: nutritionData.kcal,
         carbohydrate: nutritionData.carbohydrate,
         protein: nutritionData.protein,
@@ -100,7 +100,6 @@ export const useMealStore = defineStore('meal', () => {
     return debounce(keyword => searchMeals(keyword), 500);
   }
 
-  // 외부에 노출할 상태와 함수를 반환합니다.
   return {
     searchResults,
     isLoading,

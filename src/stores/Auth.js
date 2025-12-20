@@ -4,6 +4,18 @@ import axios from 'axios';
 import router from '@/router';
 import { useUserStore } from './User';
 
+// 인터셉터 에러 담을 큐 생성
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) prom.reject(error);
+    else prom.resolve(token);
+  });
+  failedQueue = [];
+};
+
 export const useAuthStore = defineStore('auth', () => {
   // === STATE (상태) ===
   const api = axios.create({
@@ -105,7 +117,8 @@ export const useAuthStore = defineStore('auth', () => {
       return false;
     } catch (err) {
       console.log(err.response);
-      return false;
+      // return false;
+      throw err;
     } finally {
       authChecked.value = true;
       loadingUser.value = false;
@@ -309,22 +322,45 @@ function setupInterceptors(apiInstance, resetAuthState) {
         !originalRequest.url.includes('/api/auth/signup') &&
         !originalRequest.url.includes('/api/auth/password-reset')
       ) {
+        if (isRefreshing) {
+          // 리프레시 중이면 대기열에 추가
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          })
+            .then(() => apiInstance(originalRequest))
+            .catch(err => Promise.reject(err));
+        }
         originalRequest._retry = true;
+        isRefreshing = true;
 
         try {
           // refresh 실행
-          console.log('try');
+          console.log('액세스 만료 감지: 리프레시 시도 중...');
           await apiInstance.post('/api/auth/refresh');
 
+          await fetchBasicUserInfo();
+
+          console.log('리프레시 및 유저 정보 복구 성공');
+
+          processQueue(null); // 대기 중인 요청들 진행
           // 원래 요청 재시도
           return apiInstance(originalRequest);
         } catch (refreshError) {
+          processQueue(refreshError, null);
           resetAuthState();
-          router.push({ name: 'login' });
+
+          if (!window.isAlerting) {
+            window.isAlerting = true;
+            // alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+            router.push({ name: 'login' }).then(() => {
+              window.isAlerting = false;
+            });
+          }
           return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
         }
       }
-
       return Promise.reject(error);
     },
   );

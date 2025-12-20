@@ -18,7 +18,7 @@
           />
           <button
             @click="performSearch"
-            class="bg-[#8A8F6E] text-white p-3 rounded-xl hover:bg-[#6e7256] transition shrink-0"
+            class="cursor-pointer bg-[#8A8F6E] text-white p-3 rounded-xl hover:bg-[#6e7256] transition shrink-0"
           >
             <MagnifyingGlassIcon class="h-5 w-5" />
           </button>
@@ -71,7 +71,7 @@
 
             <button
               @click="removeFood(index)"
-              class="shrink-0 transition"
+              class="shrink-0 transition cursor-pointer"
               :class="[
                 'sm:bg-red-500 sm:text-white sm:px-3 sm:py-1 sm:rounded-full sm:text-sm sm:font-medium sm:hover:bg-red-600',
                 'text-red-500 p-1 rounded-full hover:bg-red-50',
