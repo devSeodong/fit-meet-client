@@ -94,7 +94,7 @@
 <script setup>
 import { onMounted, computed } from 'vue';
 import NutritionField from './NutritionField.vue';
-import { useDashboardStore } from '@/stores/DashBoard';
+import { useDashboardStore } from '@/stores/Dashboard';
 import MobileNutritionField from './MobileNutritionField.vue';
 
 const dashboardStore = useDashboardStore();

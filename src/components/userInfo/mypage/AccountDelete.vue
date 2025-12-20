@@ -56,7 +56,6 @@ const store = useAuthStore();
 
 const handleDeletion = () => {
   if (isConfirmed.value) {
-    // 회원 탈퇴 API 호출 로직 구현
     store.signout();
     console.log('회원 탈퇴 요청됨');
   }

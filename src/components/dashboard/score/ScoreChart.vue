@@ -61,7 +61,7 @@ const chartData = computed(() => {
         borderColor: '#8A8F6E',
         borderWidth: 3,
         pointBackgroundColor: '#8A8F6E',
-        tension: 0.4, // 부드러운 꺾은선
+        tension: 0.4,
         fill: false,
         zIndex: 2,
       },
@@ -82,8 +82,8 @@ const chartData = computed(() => {
 
 const chartOptions = {
   responsive: true,
-  maintainAspectRatio: false, // 부모 높이에 맞추기 위해 반드시 false
-  resizeDelay: 100, // 화면 크기 변경 시 0.2초 뒤에 다시 그려 성능과 안정성 확보
+  maintainAspectRatio: false,
+  resizeDelay: 100,
   animation: { duration: 1000, easing: 'easeOutQuart' },
   plugins: {
     legend: { display: false },

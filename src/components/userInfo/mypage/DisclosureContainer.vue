@@ -72,7 +72,6 @@ import {
   TrashIcon,
 } from '@heroicons/vue/24/outline';
 
-// 각 설정 컴포넌트 임포트
 import PasswordChange from './PasswordChange.vue';
 import AccountDelete from './AccountDelete.vue';
 import ProfileUserAndBodySetting from './ProfileUserAndBodySetting.vue';
@@ -85,11 +84,10 @@ const disclosureButtonClass = open => [
 </script>
 
 <style scoped>
-/* Vue Transition CSS */
 .disclosure-slide-enter-active,
 .disclosure-slide-leave-active {
   transition: all 0.3s ease-out;
-  max-height: 500px; /* 충분히 큰 값으로 설정 */
+  max-height: 500px;
 }
 
 .disclosure-slide-enter-from,

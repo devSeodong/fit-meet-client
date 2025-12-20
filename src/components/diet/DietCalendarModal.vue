@@ -209,7 +209,7 @@ const emit = defineEmits(['close']);
 const router = useRouter();
 const dietStore = useDietStore();
 const activeTab = ref('breakfast');
-const currentDietDetails = ref([]); // 💡 배열로 관리
+const currentDietDetails = ref([]);
 const isLoading = ref(false);
 
 const mealTypeMap = {
@@ -227,7 +227,7 @@ const mealLabelMap = {
   nightSnack: '야식',
 };
 
-// 💡 날짜 포맷팅
+// 날짜 포맷팅
 const formattedDate = computed(() => {
   if (!props.selectedDate) return '';
   return new Date(props.selectedDate).toLocaleDateString('ko-KR', {
@@ -238,7 +238,7 @@ const formattedDate = computed(() => {
   });
 });
 
-// 💡 각 식단별 타이틀 생성
+// 각 식단별 타이틀 생성
 const getDisplayTitle = diet => {
   const foods = diet.foods || [];
   if (foods.length === 0) return '식단 정보';
@@ -246,7 +246,7 @@ const getDisplayTitle = diet => {
   return `${foods[0].foodNmKr} 외 ${foods.length - 1}개`;
 };
 
-// 💡 영양소 계산 (개별 식단용)
+// 영양소 계산 (개별 식단용)
 const calculateTotals = diet => {
   const totals = { kcal: 0, carbohydrate: 0, protein: 0, fat: 0 };
   diet.foods?.forEach(f => {
@@ -258,7 +258,7 @@ const calculateTotals = diet => {
   return totals;
 };
 
-// 💡 비율 계산 (개별 식단용)
+// 비율 계산 (개별 식단용)
 const calculateRatios = diet => {
   const { carbohydrate: c, protein: p, fat: f } = calculateTotals(diet);
   const total = c * 4 + p * 4 + f * 9;
@@ -270,7 +270,7 @@ const calculateRatios = diet => {
   };
 };
 
-// 💡 데이터 Fetch 로직
+// 데이터 Fetch 로직
 watch(
   [activeTab, () => props.isVisible, () => props.diets],
   async () => {
@@ -304,7 +304,7 @@ const goToCreate = () => {
 };
 
 const handleEdit = diet => {
-  // 예: 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
+  // 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
   const method = diet.sourceType === 'MANUAL' ? 'manual' : 'public-api';
 
   router.push({
@@ -346,15 +346,9 @@ const handleDelete = async dietId => {
 }
 
 .gradient-border {
-  /* 테두리 두께 설정 */
   border: 2px solid transparent;
-  /* 1번째 배경: 내부 콘텐츠 배경 (흰색)
-     2번째 배경: 테두리에 깔릴 그라데이션 (파랑, 초록, 주황) 
-  */
   background-image: linear-gradient(#fff, #fff),
     linear-gradient(135deg, #60a5fa 0%, #4ade80 50%, #fb923c 100%);
-
-  /* 배경이 그려질 영역 설정: 내부 배경은 padding-box까지, 그라데이션은 border-box까지 */
   background-origin: border-box;
   background-clip: padding-box, border-box;
 }

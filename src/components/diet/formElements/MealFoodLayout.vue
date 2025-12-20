@@ -73,9 +73,7 @@
               @click="removeFood(index)"
               class="shrink-0 transition"
               :class="[
-                // PC (sm 이상) 스타일
                 'sm:bg-red-500 sm:text-white sm:px-3 sm:py-1 sm:rounded-full sm:text-sm sm:font-medium sm:hover:bg-red-600',
-                // Mobile (기본) 스타일
                 'text-red-500 p-1 rounded-full hover:bg-red-50',
               ]"
             >
@@ -91,8 +89,8 @@
 
 <script setup>
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/outline';
-import { computed, ref, onMounted, watch } from 'vue'; // ref, computed, onMounted 임포트
-import { useMealStore } from '@/stores/Meal'; // 스토어 경로 수정 필요
+import { computed, ref, onMounted, watch } from 'vue';
+import { useMealStore } from '@/stores/Meal';
 import MealSearchFoodItem from './MealSearchFoodItem.vue';
 
 const props = defineProps({
@@ -106,7 +104,6 @@ const searchQuery = ref('');
 const searchResults = computed(() => mealStore.searchResults);
 const isLoading = computed(() => mealStore.isLoading);
 
-// ------------------- 데이터/로직 -------------------
 const formData = computed(() => props.formData);
 
 const updateFoods = newFoods => {
@@ -115,9 +112,9 @@ const updateFoods = newFoods => {
 // 디바운스된 검색 함수를 사용합니다. (입력 시 API 호출 빈도 줄임)
 const debouncedSearch = mealStore.getDebouncedSearch();
 
-// 2. 검색 실행 로직 수정
+// 검색 실행 로직
 const performSearch = () => {
-  // 💡 디바운스된 함수를 바로 호출합니다. (searchQuery.value의 변경을 감지하지 않아도 됨)
+  // 디바운스된 함수를 바로 호출합니다. (searchQuery.value의 변경을 감지하지 않아도 됨)
   // 실제 검색은 `searchMeals` 액션을 직접 호출하는 대신 `debouncedSearch`를 통해 실행합니다.
   mealStore.searchMeals(searchQuery.value);
 };
@@ -126,10 +123,10 @@ watch(searchQuery, newKeyword => {
 });
 
 const handleFoodAdded = finalFoodData => {
-  // finalFoodData는 dietStore.fetchDietNutrition에서 반환된 최종 객체입니다.
+  // finalFoodData는 dietStore.fetchDietNutrition에서 반환된 최종 객체
   if (!finalFoodData) return;
 
-  // 💡 상세 정보 (nutrition 포함)를 최종 foods 배열에 추가
+  // 상세 정보를 최종 foods 배열에 추가
   const newFoods = [...formData.value.foods, finalFoodData];
   updateFoods(newFoods);
 };
@@ -145,10 +142,10 @@ const removeFood = index => {
   width: 100%;
   padding: 0.75rem;
   border-width: 1px;
-  border-color: #d1d5db; /* gray-300 */
-  border-radius: 0.75rem; /* rounded-xl */
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
-  color: #374151; /* text-gray-700 */
+  border-color: #d1d5db;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  color: #374151;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 

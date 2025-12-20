@@ -67,7 +67,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useDietStore } from '@/stores/Diet';
-import { parseServingSize } from '@/utils/FoodUtils'; // 💡 아래에 유틸 함수 추가 예정
+import { parseServingSize } from '@/utils/FoodUtils';
 
 const props = defineProps({
   food: {
@@ -76,23 +76,19 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['food-added']); // 부모에게 최종 음식 객체를 전달할 이벤트
+// 부모에게 전달
+const emit = defineEmits(['food-added']);
 
 const dietStore = useDietStore();
 
-// === 상태 ===
-const isEditing = ref(false); // 용량 입력 UI 표시 여부
-const currentIntake = ref(0); // 사용자가 입력한 섭취량 (g 단위)
-const isProcessing = ref(false); // 로딩 상태
-
-// === 계산된 속성 ===
+const isEditing = ref(false);
+const currentIntake = ref(0);
+const isProcessing = ref(false);
 
 // food.servingSizeRaw에서 기본 용량과 단위를 파싱
 const { amount: initialIntake, unit } = parseServingSize(
   props.food.servingSizeRaw,
 );
-
-// === 액션 핸들러 ===
 
 const startEdit = () => {
   // 기본값을 currentIntake에 설정하고 편집 모드 시작
@@ -114,10 +110,8 @@ const confirmAdd = async () => {
   isProcessing.value = true;
 
   try {
-    // 💡 1. 서버가 요구하는 Request Body 형식의 'foods' 배열을 구성합니다.
     const requestFoodArray = [
       {
-        // foodCd는 foodCode로 매핑되어야 할 가능성이 높습니다.
         foodCode: props.food.foodCd,
         foodNmKr: props.food.foodNmKr,
         sourceType: props.food.sourceType,
@@ -128,22 +122,20 @@ const confirmAdd = async () => {
         carbohydrate: 0,
         protein: 0,
         fat: 0,
-        // ... 필요한 필드만 최소한으로 전송 (서버 요구 스키마에 따라 유연하게 조정)
       },
     ];
 
-    // 💡 2. dietStore의 POST 액션을 호출
     const responseData = await dietStore.fetchDietNutrition(requestFoodArray);
 
     if (responseData) {
-      // 💡 3. 서버 응답에서 우리가 최종적으로 추가해야 할 음식 객체를 추출합니다.
+      //  서버 응답에서 우리가 최종적으로 추가해야 할 음식 객체를 추출합니다.
       // 서버는 foods 배열과 totals를 포함한 객체를 반환합니다.
       // 추가할 음식은 요청으로 보냈던 배열의 첫 번째 요소가 재계산되어 돌아온 것이므로, foods[0]을 추출합니다.
       const finalFoodData = responseData.foods ? responseData.foods[0] : null;
 
       if (finalFoodData) {
         emit('food-added', finalFoodData);
-        cancelEdit(); // 성공 시 UI 닫기
+        cancelEdit();
       } else {
         throw new Error(
           '서버 응답에서 재계산된 음식 데이터를 찾을 수 없습니다.',
@@ -160,7 +152,6 @@ const confirmAdd = async () => {
 </script>
 
 <style scoped>
-/* MealFoodLayout.vue의 input-style을 복사하여 사용하거나, 전역 스타일에 포함해야 합니다. */
 .input-style {
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;

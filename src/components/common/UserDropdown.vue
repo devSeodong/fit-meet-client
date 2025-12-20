@@ -55,7 +55,6 @@
 </template>
 
 <script setup>
-// 스크립트 부분은 변경 없음
 import {
   Cog6ToothIcon,
   ArrowLeftStartOnRectangleIcon,
@@ -67,10 +66,9 @@ import profileImg from '@/assets/profile.png';
 const store = useAuthStore();
 const visible = ref(false);
 const dropdownRef = ref(null);
-let closeTimeout = null; // 닫기 타이머를 저장할 변수
+let closeTimeout = null;
 
 const openDropdown = () => {
-  // 열 때 닫기 타이머가 실행 중이면 취소
   clearTimeout(closeTimeout);
   visible.value = true;
 };
@@ -80,12 +78,11 @@ const close = () => {
   visible.value = false;
 };
 
-// 마우스가 영역을 벗어났을 때, 300ms 딜레이 후 닫습니다.
 const startCloseTimer = () => {
-  clearTimeout(closeTimeout); // 기존 타이머를 확실히 제거
+  clearTimeout(closeTimeout);
   closeTimeout = setTimeout(() => {
     close();
-  }, 300); // 300ms (0.3초) 지연
+  }, 300);
 };
 
 const logout = () => {

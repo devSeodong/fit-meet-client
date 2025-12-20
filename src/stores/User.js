@@ -1,5 +1,3 @@
-// stores/User.js (Composition API - Setup Store)
-
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import axios from 'axios';
@@ -18,25 +16,23 @@ export const useUserStore = defineStore('user', () => {
   const loading = ref(false);
 
   // === GETTERS (계산된 상태) ===
-  // 💡 용도: 신체 정보가 필수적으로 입력되었는지 확인
+  // 신체 정보가 필수적으로 입력되었는지 확인
   const isHealthInfoMissing = computed(() => {
     const requiredFields = [
       healthInfo.value.height_cm,
       healthInfo.value.weight_kg,
       healthInfo.value.gender,
     ];
-    // 필수 필드 중 하나라도 값이 없거나 0이면 true 반환
     return requiredFields.some(
       value => value === null || value === 0 || value === undefined,
     );
   });
 
-  // 💡 Getter: 사용자 신장 정보
+  // 사용자 신장 정보
   const userHeight = computed(() => healthInfo.value.height_cm);
 
   // === ACTIONS (함수) ===
-
-  // 💡 용도: 서버에서 가져온 데이터로 healthInfo 상태 업데이트 (Setter 역할)
+  // 서버에서 가져온 데이터로 healthInfo 상태 업데이트 (Setter 역할)
   function setHealthInfoFromFetch(userData) {
     healthInfo.value = {
       height_cm: userData.heightCm,
@@ -48,7 +44,7 @@ export const useUserStore = defineStore('user', () => {
     };
   }
 
-  // 💡 용도: 프로필(신체 및 닉네임) 수정 (/api/user/profile-upt)
+  // 프로필(신체 및 닉네임) 수정 (/api/user/profile-upt)
   async function updateUserProfileInfo(payload) {
     loading.value = true;
     const authStore = useAuthStore();
@@ -77,7 +73,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // 💡 용도: 프로필 이미지 수정 (/api/user/profile-image)
+  // 프로필 이미지 수정 (/api/user/profile-image)
   async function updateUserProfileImg(formData) {
     loading.value = true;
     try {
@@ -107,7 +103,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // 💡 용도: 프로필 이미지 삭제 (/api/user/profile-image)
+  // 프로필 이미지 삭제 (/api/user/profile-image)
   async function deleteUserProfileImg() {
     loading.value = true;
     try {
@@ -118,7 +114,6 @@ export const useUserStore = defineStore('user', () => {
 
       if (res.data.code === 0) {
         const authStore = useAuthStore();
-        // AuthStore의 프로필 이미지 URL 초기화
         authStore.userInfo.profileImageUrl = '';
         return res.data;
       } else {
@@ -132,7 +127,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // 💡 용도: 비밀번호 변경 (/api/user/password-upt)
+  // 비밀번호 변경 (/api/user/password-upt)
   async function updatePassword(payload) {
     try {
       const res = await axios.post(
@@ -146,12 +141,12 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // 💡 용도: 첫 신체정보 입력 (폐기됨) (/api/user/insert-body)
+  // 첫 신체정보 입력 (폐기됨) (/api/user/insert-body)
   async function submitBodyProfileInfo() {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/user/insert-body`,
-        healthInfo.value, // ref.value로 접근
+        healthInfo.value,
         { withCredentials: true },
       );
 

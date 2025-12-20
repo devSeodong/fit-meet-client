@@ -74,24 +74,16 @@ const emit = defineEmits(['update:formData']);
 
 const formData = computed(() => props.formData);
 
-// ------------------- UI 클래스 정의 -------------------
-// 마이페이지의 일반 input/textarea/select 스타일 통일
-// const inputClasses =
-//   'w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8A8F6E] focus:border-[#8A8F6E] transition shadow-sm text-gray-700';
-
-// 마이페이지 성별 버튼 스타일을 참고하여 식사 종류 버튼 스타일 정의
+// UI 클래스 색상 정의
 const mealTypeButtonClasses = value => {
   const isSelected = formData.value.mealType === value;
   return [
-    // w-1/5 같은 고정 너비 대신, flex-1이 적용되도록 합니다.
     'px-3 py-2 rounded-xl text-sm font-semibold transition duration-200 whitespace-nowrap', // whitespace-nowrap으로 텍스트 줄바꿈 방지
     isSelected
       ? 'bg-[#8A8F6E] text-white shadow-md'
       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300',
   ];
 };
-
-// ------------------- 데이터 및 로직 -------------------
 
 // 식사 종류 옵션
 const mealTypes = [
@@ -102,21 +94,19 @@ const mealTypes = [
   { value: 'E', label: '야식' },
 ];
 
-// Helper: Date 객체를 input[type=datetime-local] 형식 (YYYY-MM-DDTHH:MM)으로 변환
-// 💡 수정: Date 객체의 사본을 만들거나, TimezoneOffset을 계산하여 로컬 시간에 맞춥니다.
 const formatDateTime = date => {
   if (!date) return '';
 
   // Date 객체가 아닌 경우, Date 객체로 변환
   const originalDt = date instanceof Date ? date : new Date(date);
 
-  // 1. GMT + 00:00 시간을 기준으로, 현재 로컬 타임존 오프셋만큼 더해줍니다.
-  //    (datetime-local이 로컬 시간을 표시하기 위함)
+  // GMT + 00:00 시간을 기준으로, 현재 로컬 타임존 오프셋만큼 더해줍니다.
+  // (datetime-local이 로컬 시간을 표시하기 위함)
   const offset = originalDt.getTimezoneOffset() * 60000; // 밀리초 단위로 변환
   const localTime = new Date(originalDt.getTime() - offset);
 
-  // 2. ISO 문자열로 변환하고 YYYY-MM-DDTHH:MM 형식만 추출
-  //    (ISO 문자열은 UTC 기준이므로, 위에서 offset을 조정했기 때문에 로컬 시간을 나타냅니다.)
+  // ISO 문자열로 변환하고 YYYY-MM-DDTHH:MM 형식만 추출
+  // (ISO 문자열은 UTC 기준이므로, 위에서 offset을 조정했기 때문에 로컬 시간을 나타냅니다.)
   return localTime.toISOString().slice(0, 16);
 };
 
@@ -135,6 +125,4 @@ const updateDescription = value => updateField('description', value);
 const updateIsPublic = value => updateField('isPublic', value);
 </script>
 
-<style scoped>
-/* date/datetime-local input의 기본 화살표 숨기기 (선택 사항) */
-</style>
+<style scoped></style>

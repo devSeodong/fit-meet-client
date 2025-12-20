@@ -1,49 +1,35 @@
-// stores/Auth.js (Composition API - Setup Store)
-
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import router from '@/router';
-import { useUserStore } from './User'; // User Store는 그대로 참조
+import { useUserStore } from './User';
 
 export const useAuthStore = defineStore('auth', () => {
   // === STATE (상태) ===
-  // 💡 1. Axios 인스턴스 생성 및 기본 설정 유지
   const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    withCredentials: true, // 쿠키(ACCESS_TOKEN, REFRESH_TOKEN) 포함 요청
+    withCredentials: true,
   });
-
-  // const isRefreshing = ref(false);
-  // let failedQueue = [];
 
   const userInfo = ref({
     nickname: '',
     profileImageUrl: '',
     email: '',
+    bodyInfoVal: false,
   });
 
   const isLoggedIn = ref(false);
-  const loadingUser = ref(true); // 앱 로딩 시 사용자 정보 불러오는 중
-  // 💡 Getter: 유저 정보가 로드되었는지 확인
+  const loadingUser = ref(true);
+
+  // Getter
+  // 유저 정보가 로드 확인
   const isAuthenticated = computed(() => isLoggedIn.value);
-  // 💡 Getter: 유저 닉네임을 쉽게 접근
+  // 유저 닉네임에 접근
   const userNickname = computed(() => userInfo.value.nickname);
   const authChecked = ref(false);
-  // === 리프레시 헬퍼 함수 ===
-  // const processQueue = (error, token = null) => {
-  //   failedQueue.forEach(prom => {
-  //     if (error) {
-  //       prom.reject(error);
-  //     } else {
-  //       prom.resolve(token);
-  //     }
-  //   });
-  //   failedQueue = [];
-  // };
-  // === ACTIONS (함수) ===
 
-  // 💡 용도: 회원가입 (/api/auth/signup)
+  // Action
+  // 회원가입 (/api/auth/signup)
   async function createUser(payload) {
     try {
       const res = await axios.post(
@@ -59,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 로그인 (/api/auth/login)
+  // 로그인 (/api/auth/login)
   async function getLogin(payload) {
     try {
       const res = await axios.post(
@@ -70,7 +56,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (res.data.code === 0) {
         isLoggedIn.value = true;
-        // 로그인 후 사용자 정보 가져오기
         await fetchBasicUserInfo();
       }
       return res.data;
@@ -83,7 +68,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 이메일 중복 체크 (/api/auth/email-info)
+  // 이메일 중복 체크 (/api/auth/email-info)
   async function checkEmail(email) {
     try {
       await axios.get(`${import.meta.env.VITE_API_URL}/api/auth/email-info`, {
@@ -96,19 +81,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 사용자 로그인 기본 정보 조회 (닉네임/프로필 사진) (/api/user/profile-image)
+  // 사용자 로그인 기본 정보 조회 (닉네임/프로필 사진/신체정보 기입 상태) (/api/user/profile-image)
   async function fetchBasicUserInfo() {
     if (isLoggedIn.value === false && loadingUser.value === false) {
-      // 로그인 상태가 아닌데 굳이 복구 시도할 이유 없음
       return false;
     }
     loadingUser.value = true;
 
     try {
-      // const res = await axios.get(
-      //   `${import.meta.env.VITE_API_URL}/api/user/profile-image`,
-      //   { withCredentials: true },
-      // );
       const res = await api.get(`/api/user/profile-image`);
       console.log('사용자 정보 조회::', res);
       if (res.data.code === 0) {
@@ -116,7 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
         userInfo.value = {
           nickname: userData.nickname,
           profileImageUrl: userData.profileImageUrl,
-          // email: userData.email, // 이 API에서 email이 안 온다면 주석 유지
+          bodyInfoVal: Boolean(userData.bodyInfoVal),
+          // email: userData.email,
         };
         isLoggedIn.value = true;
         return true;
@@ -124,12 +105,6 @@ export const useAuthStore = defineStore('auth', () => {
       return false;
     } catch (err) {
       console.log(err.response);
-      // Access Token이 없거나 만료(401/1002)되면 인터셉터가 리프레시를 시도하며,
-      // 리프레시까지 실패(1005)하면 이 요청은 최종적으로 실패(reject)됨.
-      // 라우터 가드 로직을 위해 여기서 최종적으로 상태 초기화
-      // console.error('fetchBasicUserInfo 최종 실패:', err.response?.data || err);
-      // userInfo.value = {};
-      // isLoggedIn.value = false;
       return false;
     } finally {
       authChecked.value = true;
@@ -137,7 +112,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 2. 리프레시 함수: Access Token 재발급 및 사용자 정보 재조회 시도
+  // Access Token 재발급 및 사용자 정보 재조회 시도(리프레시 토큰)('/api/auth/refresh')
   async function refreshAccessToken() {
     const res = await api.post('/api/auth/refresh');
 
@@ -146,19 +121,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 3. 인터셉터 설정 (아래에서 정의)
-  // setupInterceptors(api, refreshAccessTokenAndUserInfo);
-
-  // 💡 용도: 모든 유저 정보 조회 (Auth 및 User Store 업데이트) (/api/user/profile-info)
+  // 모든 유저 정보 조회 (Auth 및 User Store 업데이트) (/api/user/profile-info)
   async function fetchAllUserInfo() {
     loadingUser.value = true;
-    const userStore = useUserStore(); // UserStore 참조
-
+    const userStore = useUserStore();
     try {
-      // const res = await axios.get(
-      //   `${import.meta.env.VITE_API_URL}/api/user/profile-info`,
-      //   { withCredentials: true },
-      // );
       const res = await api.get(`/api/user/profile-info`);
       console.log('사용자 정보 조회::', res);
 
@@ -170,7 +137,9 @@ export const useAuthStore = defineStore('auth', () => {
           nickname: userData.nickname,
           profileImageUrl: userData.profileImageUrl,
           email: userData.email,
+          bodyInfoVal: userData.bodyInfoVal,
         };
+        console.log('fetchbodyinfo:', userData.bodyInfoVal, bodyInfoVal);
         // UserStore에 신체 정보 저장
         userStore.setHealthInfoFromFetch(userData);
         isLoggedIn.value = true;
@@ -201,7 +170,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 비밀번호 재설정 메일 전송 (/api/auth/password-reset/request)
+  // 비밀번호 재설정 메일 전송 (/api/auth/password-reset/request)
   async function requestPasswordReset(email) {
     try {
       const res = await axios.post(
@@ -229,7 +198,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 비밀번호 재설정 토큰 유효성 검사 (/api/auth/password-reset/validate)
+  // 비밀번호 재설정 토큰 유효성 검사 (/api/auth/password-reset/validate)
   async function validatePasswordReset(token) {
     try {
       const res = await axios.get(
@@ -242,7 +211,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 비밀번호 재설정 완료 (/api/auth/password-reset/confirm)
+  // 비밀번호 재설정 완료 (/api/auth/password-reset/confirm)
   async function confirmPasswordReset(payload) {
     try {
       const res = await axios.post(
@@ -256,7 +225,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // 💡 용도: 로그아웃 (/api/auth/logout)
+  // 로그아웃 (/api/auth/logout)
   async function logout() {
     try {
       const res = await axios.post(
@@ -266,18 +235,12 @@ export const useAuthStore = defineStore('auth', () => {
       );
       resetAuthState();
       router.push({ name: 'login' });
-      // if (res.data.code === 0) {
-      //   userInfo.value = {};
-      //   isLoggedIn.value = false;
-      //   alert(res.data.msg);
-      //   router.push({ name: 'login' });
-      // }
     } catch (err) {
       console.log('로그아웃에 실패했습니다!');
     }
   }
 
-  // 💡 용도: 회원탈퇴 (/api/user/signout)
+  // 회원탈퇴 (/api/user/signout)
   async function signout() {
     const userStore = useUserStore();
     try {
@@ -288,9 +251,7 @@ export const useAuthStore = defineStore('auth', () => {
       );
 
       if (res.data.code === 0) {
-        // userInfo.value = {};
-        // isLoggedIn.value = false;
-        userStore.setHealthInfoFromFetch({}); // User Store 초기화
+        userStore.setHealthInfoFromFetch({});
         resetAuthState();
         alert(res.data.msg);
         router.push({ name: 'login' });
@@ -333,6 +294,7 @@ export const useAuthStore = defineStore('auth', () => {
     resetAuthState,
   };
 });
+// 리프레시 인터셉터
 function setupInterceptors(apiInstance, resetAuthState) {
   apiInstance.interceptors.response.use(
     res => res,
@@ -350,11 +312,11 @@ function setupInterceptors(apiInstance, resetAuthState) {
         originalRequest._retry = true;
 
         try {
-          // 🔥 refresh 실행
+          // refresh 실행
           console.log('try');
           await apiInstance.post('/api/auth/refresh');
 
-          // 🔁 원래 요청 재시도
+          // 원래 요청 재시도
           return apiInstance(originalRequest);
         } catch (refreshError) {
           resetAuthState();

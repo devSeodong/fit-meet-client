@@ -48,11 +48,11 @@ import { computed } from 'vue';
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
-  type: String, // 'kcal', 'carb', 'protein', 'fat'
-  title: String, // 표시할 이름
-  consumed: Number, // 현재 섭취량
-  goal: Number, // 목표량
-  unit: String, // 단위 (kcal, g)
+  type: String,
+  title: String,
+  consumed: Number,
+  goal: Number,
+  unit: String,
 });
 
 // 진행률 계산

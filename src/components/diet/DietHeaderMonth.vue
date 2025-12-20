@@ -1,6 +1,6 @@
 <template>
   <div class="grid grid-cols-3 items-center mb-6">
-    <!-- 왼쪽 (비워두거나 추후 화살표용) -->
+    <!-- 왼쪽 -->
     <div></div>
 
     <!-- 가운데: 월 선택 -->
@@ -28,16 +28,16 @@
       </div>
     </div>
 
-    <!-- 오른쪽: 주간 | 월간 토글 (기존 그대로) -->
+    <!-- 오른쪽: 주간 | 월간 토글 -->
     <div class="flex justify-end">
-      <div class="flex rounded-lg overflow-hidden lightorange-bg-color">
+      <div class="flex rounded-lg overflow-hidden p-1 bg-gray-100">
         <button
           @click="$emit('changeView', 'week')"
           :class="[
-            'px-4 py-2 text-xs font-bold transition',
+            'px-4 py-1.5 text-sm font-bold rounded-md transition-all',
             viewMode === 'week'
-              ? 'orange-bg-color text-white'
-              : 'text-gray-700 lightorange-bg-color',
+              ? 'bg-white text-[#8A8F6E] shadow-sm'
+              : 'text-gray-400 hover:text-gray-600',
           ]"
         >
           주간
@@ -45,10 +45,10 @@
         <button
           @click="$emit('changeView', 'month')"
           :class="[
-            'px-4 py-2 text-xs font-bold transition',
+            'px-4 py-1.5 text-sm font-bold rounded-md transition-all',
             viewMode === 'month'
-              ? 'orange-bg-color text-white'
-              : 'text-gray-700 lightorange-hover',
+              ? 'bg-white text-[#8A8F6E] shadow-sm'
+              : 'text-gray-400 hover:text-gray-600',
           ]"
         >
           월간

@@ -10,7 +10,7 @@
   position: fixed;
   z-index: -1;
   pointer-events: none;
-  border-radius: 50%; /* 기본값으로 원형 설정 */
+  border-radius: 50%;
 }
 
 /* 🟢 왼쪽 상단 (Small, Green, Circle) */
@@ -41,7 +41,7 @@
   width: 800px;
   opacity: 0.5;
   height: 600px;
-  border-radius: 30%; /* 직사각형 모양 유지 */
+  border-radius: 30%;
 }
 
 /* 🟠 왼쪽 하단 (Large, Orange, Rectangular) */
@@ -57,7 +57,7 @@
   width: 800px;
   height: 600px;
   opacity: 0.5;
-  border-radius: 30%; /* 직사각형 모양 유지 */
+  border-radius: 30%;
 }
 
 /* 🟢 오른쪽 하단 (Small, Green, Circle) */
@@ -103,7 +103,7 @@
 @layer base {
   :root {
     /* kcal */
-    --color-kcal: #facc15; /* yellow-500 계열 */
+    --color-kcal: #facc15;
     --color-kcal-light: #fdf2e7;
 
     /* 탄수화물 */
@@ -111,7 +111,7 @@
     --color-carb-light: #f2fde7;
 
     /* 단백질 */
-    --color-protein: #818cf8; /* indigo-400 */
+    --color-protein: #818cf8;
     --color-protein-light: #e0e7ff;
 
     /* 지방 */
@@ -175,35 +175,27 @@
   }
 }
 
-/* Tailwind 클래스를 대체하는 사용자 정의 CSS */
 .input-style {
-  /* 기본 스타일 */
   width: 100%;
-  padding: 0.75rem; /* p-3 */
-  border-width: 1px; /* border */
-  border-color: #d1d5db; /* border-gray-300 */
-  border-radius: 0.75rem; /* rounded-xl */
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
-  color: #374151; /* text-gray-700 */
+  padding: 0.75rem;
+  border-width: 1px;
+  border-color: #d1d5db;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  color: #374151;
 
-  /* 전환 효과 */
-  transition: border-color 0.2s, box-shadow 0.2s; /* transition */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 /* 포커스 시 스타일 (focus:ring-2 focus:ring-[#8A8F6E] focus:border-[#8A8F6E]) */
 .input-style:focus {
-  outline: none; /* 기본 브라우저 포커스 아웃라인 제거 */
-
-  /* focus:border-[#8A8F6E] */
+  outline: none;
   border-color: #8a8f6e;
-
-  /* focus:ring-2 focus:ring-[#8A8F6E] 효과 모방 */
   box-shadow: 0 0 0 2px #8a8f6e, 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  /* (링(shadow)과 원래 그림자(shadow-sm)를 합친 형태) */
 }
 
 input[type='datetime-local']::-webkit-calendar-picker-indicator {
   cursor: pointer;
   filter: invert(43%) sepia(10%) saturate(1610%) hue-rotate(69deg)
-    brightness(84%) contrast(85%); /* 색상 조정 */
+    brightness(84%) contrast(85%);
 }

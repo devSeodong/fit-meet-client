@@ -1,5 +1,3 @@
-// src/stores/diet.js (Pinia Setup Store - Composition API Style)
-
 import { defineStore } from 'pinia';
 import { ref, computed, reactive } from 'vue';
 import axios from 'axios';
@@ -7,40 +5,28 @@ import axios from 'axios';
 const BASE_URL = `${import.meta.env.VITE_API_URL}/api/diets`;
 
 export const useDietStore = defineStore('diet', () => {
-  // === STATE (상태) ===
-  const dietList = ref([]); // 전체 식단 리스트
-  const dailyDietMap = ref({}); // reactive({}) 대신 ref({}) 사용
-  // const dailyDietMap = reactive({}); // 일간 식단 데이터. key: 'YYYY-MM-DD', value: [식단 객체 배열]
-  const isLoading = ref(false); // 로딩 상태
-  const error = ref(null); // 에러 메시지
+  //  state
+  const dietList = ref([]);
+  const dailyDietMap = ref({});
+  const isLoading = ref(false);
+  const error = ref(null);
 
-  // === GETTERS (계산된 상태) ===
+  // getter
+  const getDietByDate = dateString => {
+    return dailyDietMap.value[dateString] || [];
+  };
 
-  // 주간 평균 칼로리 등을 계산하는 Getter (로직 더미)
-  const getWeeklyAverageCalories = computed(() => {
-    // 실제 계산 로직 구현 필요
-    return 0;
-  });
-
-  // === ACTIONS (함수) ===
-
-  /**
-   * 식단 등록 (POST /api/diets)
-   */
+  // ACTIONS (함수)
+  // 식단 등록 (POST /api/diets)
   async function insertDiet(dietData) {
     isLoading.value = true;
     error.value = null;
     try {
-      // Note: import.meta.env.VITE_API_URL은 Vite 환경 변수를 사용하는 방식입니다.
-      const response = await axios.post(
-        `${BASE_URL}`, // VITE_API_URL이 이미 axios 인스턴스에 설정되었다고 가정
-        dietData,
-        { withCredentials: true },
-      );
+      const response = await axios.post(`${BASE_URL}`, dietData, {
+        withCredentials: true,
+      });
 
-      // 등록 성공 후, 해당 날짜의 데이터를 새로고침 (옵션)
       if (response.data.code === 0) {
-        // await fetchDietForDay(dietData.date);
         console.log('식단 등록 성공');
       }
 
@@ -54,9 +40,7 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
-  /**
-   * 특정 날짜의 식단 정보를 서버에서 가져와 dailyDietMap에 저장
-   */
+  // 특정 날짜의 식단 정보를 서버에서 가져와 dailyDietMap에 저장
   async function fetchDietForDay(dateString) {
     // 캐싱: 이미 데이터가 있으면 요청 안함 (필요시 주석 해제)
     // if (dailyDietMap.value[dateString]) return;
@@ -67,7 +51,7 @@ export const useDietStore = defineStore('diet', () => {
         withCredentials: true,
       });
 
-      // 🔥 핵심: 새로운 객체 레퍼런스를 할당하여 반응성을 강제로 트리거합니다.
+      // 새로운 객체 레퍼런스를 할당하여 반응성을 강제로 트리거
       dailyDietMap.value = {
         ...dailyDietMap.value,
         [dateString]: response.data.data || [],
@@ -86,14 +70,7 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
-  // Getter 역할을 하는 함수
-  const getDietByDate = dateString => {
-    return dailyDietMap.value[dateString] || [];
-  };
-
-  /**
-   * 특정 식단의 상세 정보(음식 리스트 포함) 조회
-   */
+  //특정 식단의 상세 정보(음식 리스트 포함) 조회
   async function fetchDietDetail(dietId) {
     if (!dietId) return null;
     isLoading.value = true;
@@ -101,7 +78,7 @@ export const useDietStore = defineStore('diet', () => {
       const response = await axios.get(`${BASE_URL}/${dietId}`, {
         withCredentials: true,
       });
-      return response.data.data; // foods 배열이 포함된 상세 객체 반환
+      return response.data.data;
     } catch (err) {
       console.error('식단 상세 조회 실패:', err);
       return null;
@@ -126,15 +103,15 @@ export const useDietStore = defineStore('diet', () => {
 
       const data = response.data.data || [];
 
-      // 1. 데이터를 날짜별로 그룹화
+      // 데이터를 날짜별로 그룹화
       const grouped = data.reduce((acc, diet) => {
-        const dateKey = diet.date.split('T')[0]; // "2025-12-17"
+        const dateKey = diet.date.split('T')[0];
         if (!acc[dateKey]) acc[dateKey] = [];
         acc[dateKey].push(diet);
         return acc;
       }, {});
 
-      // 2. 기존 데이터와 합치기 (반응성 유지)
+      // 기존 데이터와 합치기
       dailyDietMap.value = {
         ...dailyDietMap.value,
         ...grouped,
@@ -148,6 +125,7 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
+  // 사용자 섭취용량 재설정시 영양성분 재패치
   async function fetchDietNutrition(foodDataArray) {
     if (!foodDataArray || foodDataArray.length === 0) {
       console.error('스토어: 전송할 음식 데이터 배열이 비어있습니다.');
@@ -158,8 +136,8 @@ export const useDietStore = defineStore('diet', () => {
     error.value = null;
     try {
       const response = await axios.post(
-        `${BASE_URL}/nutrition`, // 💡 POST 요청 URL
-        { foods: foodDataArray }, // 💡 Request Body로 foods 배열 전송
+        `${BASE_URL}/nutrition`,
+        { foods: foodDataArray },
         { withCredentials: true },
       );
 
@@ -168,22 +146,17 @@ export const useDietStore = defineStore('diet', () => {
         return null;
       }
 
-      // 서버 응답 데이터 (foods 배열 및 totals)를 반환합니다.
-      // 우리는 여기서 foods[0]을 사용하게 됩니다.
       return response.data.data;
     } catch (err) {
       error.value = '음식 영양성분 재조회에 실패했습니다.';
       console.error('스토어: 음식 영양성분 재조회 실패', err);
-      // 오류 발생 시에도 예외를 다시 던져 컴포넌트에서 catch하도록 처리
       throw err;
     } finally {
       isLoading.value = false;
     }
   }
 
-  /**
-   * 식단 수정 (PUT /api/diets/{dietId})
-   */
+  //식단 수정 (PUT /api/diets/{dietId})
   async function updateDiet(dietId, updateData) {
     isLoading.value = true;
     try {
@@ -191,10 +164,9 @@ export const useDietStore = defineStore('diet', () => {
         withCredentials: true,
       });
 
-      // 수정 성공 시 dailyDietMap 동기화 로직 (선택)
+      // 수정 성공 시 dailyDietMap 동기화 로직
       const dateKey = updateData.date.split('T')[0];
       if (dailyDietMap.value[dateKey]) {
-        // 기존 맵에서 해당 데이터만 교체하거나 다시 fetch
         await fetchDietForDay(dateKey);
       }
 
@@ -207,9 +179,7 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
-  /**
-   * 식단 삭제 (DELETE /api/diets/{dietId})
-   */
+  //식단 삭제 (DELETE /api/diets/{dietId})
   async function deleteDiet(dietId, dateString) {
     isLoading.value = true;
     error.value = null;
@@ -219,13 +189,13 @@ export const useDietStore = defineStore('diet', () => {
       });
 
       if (response.data.code === 0) {
-        // 🔥 Store 상태 반영: dailyDietMap에서 해당 식단 제거
+        // dailyDietMap에서 해당 식단 제거(store 반영)
         if (dailyDietMap.value[dateString]) {
           dailyDietMap.value[dateString] = dailyDietMap.value[
             dateString
           ].filter(d => (d.id || d.dietId) !== dietId);
 
-          // 만약 해당 날짜에 식단이 하나도 안 남았다면 키 자체를 정리(옵션)
+          // 만약 해당 날짜에 식단이 하나도 안 남았다면 키 자체를 정리
           if (dailyDietMap.value[dateString].length === 0) {
             delete dailyDietMap.value[dateString];
           }
@@ -245,9 +215,6 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
-  // TODO: updateDiet, deleteDiet, fetchDietDetail 등의 CRUD 액션 추가 필요
-
-  // 외부에 노출할 상태, 게터, 액션을 반환
   return {
     // State
     dietList,
@@ -257,7 +224,6 @@ export const useDietStore = defineStore('diet', () => {
 
     // Getters
     getDietByDate,
-    getWeeklyAverageCalories,
 
     // Actions
     insertDiet,

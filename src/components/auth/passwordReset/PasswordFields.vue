@@ -82,8 +82,6 @@ watch(passwordLocal, newPassword => {
   }
 
   const regexTestResult = PASSWORD_REGEX.test(trimmedPassword);
-  // console.log(`[PF] Input: "${trimmedPassword}" (Length: ${trimmedPassword.length})`);
-  // console.log(`[PF] Regex Test Result: ${regexTestResult}`);
 
   if (regexTestResult) {
     isPasswordValid.value = true;
@@ -105,7 +103,7 @@ watch(isPasswordValid, isValid => {
   emit('update:isPasswordValid', isValid);
 });
 
-// 🚨 2. 일치 여부 상태를 계산하는 Computed 속성
+// 일치 여부 상태를 계산하는 Computed 속성
 const isMatchComputed = computed(() => {
   const p1 = passwordLocal.value.trim();
   const p2 = pwCheckLocal.value.trim();
@@ -114,11 +112,10 @@ const isMatchComputed = computed(() => {
   return p1 !== '' && p2 !== '' && p1 === p2;
 });
 
-// 🚨 3. isMatch 상태가 변경될 때마다 부모에게 전달
+// isMatch 상태가 변경될 때마다 부모에게 전달
 watch(
   isMatchComputed,
   newIsMatch => {
-    // console.log('Emit isMatch:', newIsMatch); // 디버깅용
     emit('update:isMatch', newIsMatch);
   },
   { immediate: true },
@@ -143,7 +140,7 @@ const passwordMsg = computed(() => {
   }
 });
 
-// 🚨 추가: 외부에서 호출하여 내부 필드를 초기화하는 함수
+// 외부에서 호출하여 내부 필드를 초기화하는 함수
 function clearFields() {
   passwordLocal.value = '';
   pwCheckLocal.value = ''; // 초기화된 값을 부모에게 다시 전달하여 상태 동기화
@@ -155,14 +152,11 @@ function clearFields() {
 
 // 부모 컴포넌트가 접근할 수 있도록 노출
 defineExpose({
-  // isMatch, isValidRegex는 이제 부모가 emit으로 받으므로 제거 (선택적)
-  passwordInput: passwordInputRef, // ref 노출 (포커스용)
+  passwordInput: passwordInputRef,
   passwordValue: passwordLocal,
   pwCheckValue: pwCheckLocal,
-  clearFields, // 👈 clearFields 함수 노출
+  clearFields,
 });
 </script>
 
-<style scoped>
-/* style은 필요하다면 여기에 추가 */
-</style>
+<style scoped></style>

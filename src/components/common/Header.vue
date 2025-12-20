@@ -75,7 +75,6 @@
 </template>
 
 <script setup>
-// 스크립트 부분은 동일합니다.
 import { ref } from 'vue';
 import { Bars3Icon } from '@heroicons/vue/24/outline';
 import { useAuthStore } from '@/stores/Auth';

@@ -181,14 +181,14 @@ const userName = ref('');
 const nickname = ref('');
 const password = ref('');
 const pwCheck = ref('');
-const formMsg = ref(''); // 서버 오류 및 필수 필드 누락 메시지 용도
+const formMsg = ref('');
 
 const formMsgStatus = ref('');
-// 🚨 추가: 비밀번호 정규식 (8~20자, 영문/숫자/특수문자 각 1개 이상)
+// 비밀번호 정규식 (8~20자, 영문/숫자/특수문자 각 1개 이상)
 const PASSWORD_REGEX =
   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
 
-// 🚨 추가: 비밀번호 유효성 상태 및 메시지
+// 비밀번호 유효성 상태 및 메시지
 const isPasswordValid = ref(false);
 const passwordValidationMsg = ref('');
 
@@ -198,7 +198,7 @@ watch([password, pwCheck], () => {
   formMsgStatus.value = '';
 });
 
-// 🚨 추가: 비밀번호 정규식 유효성 검사
+// 비밀번호 정규식 유효성 검사
 watch(password, newPassword => {
   if (!newPassword) {
     isPasswordValid.value = false;
@@ -227,7 +227,7 @@ const passwordInput = ref(null);
 const pwStatus = ref('');
 const passwordMsg = computed(() => {
   if (!password.value || !pwCheck.value) return '';
-  if (formMsgStatus.value === 'error') return ''; // 서버 오류 발생 시 숨김
+  if (formMsgStatus.value === 'error') return '';
 
   if (password.value === pwCheck.value) {
     pwStatus.value = 'success';
@@ -238,10 +238,10 @@ const passwordMsg = computed(() => {
   }
 });
 
-const fileInput = ref(null); // 파일 인풋 참조
+const fileInput = ref(null);
 
 const profileFile = ref(null);
-const previewUrl = ref(null); // 이미지 미리보기 URL
+const previewUrl = ref(null);
 
 // 파일 선택 시 호출되는 함수
 const handleFileChange = event => {
@@ -261,11 +261,10 @@ watch(email, () => {
   emailMsg.value = '';
 });
 
-// ⭐ 이메일 중복 체크
+// 이메일 중복 체크
 const checkEmail = async () => {
   const trimmedEmail = email.value.trim();
 
-  // 🔥 공백이거나 빈 문자열이면 서버에 요청 보내지 않도록 막기
   if (!trimmedEmail) {
     emailStatus.value = 'error';
     emailMsg.value = '이메일을 입력해주세요!';
@@ -288,9 +287,9 @@ const checkEmail = async () => {
   }
 };
 
-// ⭐ 회원가입
+// 회원가입
 const submitSignup = async () => {
-  // 🚨 1. 모든 필수 필드 공백 검사
+  // 모든 필수 필드 공백 검사
   if (
     !email.value ||
     !userName.value ||
@@ -303,7 +302,7 @@ const submitSignup = async () => {
     return; // 즉시 제출 중단
   }
 
-  // 🚨 2. 이메일 중복 확인 여부 체크
+  // 이메일 중복 확인 여부 체크
   if (!isEmailChecked.value) {
     emailMsg.value = '이메일 중복확인을 해주세요!';
     emailStatus.value = 'error';
@@ -311,7 +310,7 @@ const submitSignup = async () => {
     return;
   }
 
-  // 🚨 3. 비밀번호 정규식 유효성 체크
+  // 비밀번호 정규식 유효성 체크
   if (!isPasswordValid.value) {
     formMsgStatus.value = 'error';
     formMsg.value = '비밀번호가 요구 조건을 만족하지 않습니다.';
@@ -319,7 +318,7 @@ const submitSignup = async () => {
     return;
   }
 
-  // 🚨 4. 비밀번호 일치 여부 체크
+  // 비밀번호 일치 여부 체크
   if (password.value !== pwCheck.value) {
     formMsgStatus.value = 'error';
     formMsg.value = '비밀번호와 비밀번호 확인이 일치하지 않습니다.';
@@ -330,38 +329,24 @@ const submitSignup = async () => {
   // 유효성 검사 통과 후 데이터 전송 준비
   const formData = new FormData();
 
-  // 1. 텍스트 데이터
+  // 텍스트 데이터
   formData.append('email', email.value);
   formData.append('password', password.value);
   formData.append('name', userName.value);
   formData.append('nickname', nickname.value);
 
-  // 2. 파일 데이터
+  // 파일 데이터
   if (profileFile.value) {
     formData.append('profileImage', profileFile.value);
   }
 
   try {
-    // FormData 내용 디버깅 (필요 시 주석 해제)
-    // console.log('--- 프론트에서 전달하는 FormData 내용 ---');
-    // for (const [key, value] of formData.entries()) {
-    //     if (value instanceof File) {
-    //         console.log(`[File] ${key}: ${value.name} (${value.size} bytes)`);
-    //     } else {
-    //         console.log(`[Text] ${key}: ${value}`);
-    //     }
-    // }
-    // console.log('-------------------------------------------');
-
-    // Auth Store의 createUser 함수 호출
     const res = await store.createUser(formData);
     if (res.code === 0) {
       alert('회원가입 성공!');
       router.push({ name: 'login' });
-      // router.push({ name: 'userHealthInfo' });
     }
   } catch (err) {
-    // 서버에서 발생한 특정 오류 처리 (예: 비밀번호 유효성 검사 실패)
     if (err.code === 1012) {
       formMsgStatus.value = 'error';
       formMsg.value = err.msg;
@@ -369,7 +354,6 @@ const submitSignup = async () => {
       return;
     }
 
-    // 기타 서버 오류
     formMsgStatus.value = 'error';
     formMsg.value = '서버 오류가 발생했습니다.';
     console.error(err);

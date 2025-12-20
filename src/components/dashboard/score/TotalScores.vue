@@ -3,7 +3,10 @@
     class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full"
   >
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-gray-800">식단 유지 점수</h2>
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-5 bg-[#8A8F6E] rounded-full"></span>
+        <h2 class="text-xl font-bold text-gray-800">주간/월간 식단 달성도</h2>
+      </div>
       <div class="flex bg-gray-100 p-1 rounded-lg">
         <button
           @click="viewType = 'week'"
@@ -33,7 +36,7 @@
       </div>
 
       <div
-        class="w-full lg:w-46 lg:flex-shrink-0 flex flex-col justify-center items-center bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-inner-sm"
+        class="w-full lg:w-46 lg:shrink-0 flex flex-col justify-center items-center bg-gray-50 rounded-xl p-6 border border-gray-100 shadow-inner-sm"
       >
         <span
           class="text-gray-500 text-sm font-semibold tracking-tight uppercase"
@@ -67,7 +70,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { useDashboardStore } from '@/stores/DashBoard';
+import { useDashboardStore } from '@/stores/Dashboard';
 import ScoreChart from './ScoreChart.vue';
 
 const dashboardStore = useDashboardStore();

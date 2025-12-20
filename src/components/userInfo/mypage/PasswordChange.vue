@@ -39,7 +39,6 @@
         :disabled="!isFormValid || isSubmitting"
         class="w-full py-2 px-4 my-2 text-white text-base font-bold rounded-xl bg-[#8A8F6E] hover:bg-[#6e7256] transition shadow-lg"
         :class="{
-          // 🟢 폼이 유효하지 않거나 전송 중일 때만 비활성화 스타일을 적용 (hover도 무효화)
           'bg-gray-400 cursor-not-allowed hover:bg-gray-400 shadow-none':
             !isFormValid || isSubmitting,
         }"
@@ -52,13 +51,11 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import PasswordFields from '@/components/auth/passwordReset/PasswordFields.vue'; // 경로에 맞게 수정 필요
-import { useUserStore } from '@/stores/User'; // 사용자 Store 경로에 맞게 수정 필요
+import PasswordFields from '@/components/auth/passwordReset/PasswordFields.vue';
+import { useUserStore } from '@/stores/User';
 
-// Store 초기화
 const userStore = useUserStore();
 
-// 로컬 상태
 const currentPassword = ref('');
 const newPassword = ref('');
 const isPasswordValid = ref(false);
@@ -79,14 +76,12 @@ const isFormValid = computed(() => {
   );
 });
 
-// 🚨 디버깅을 위해 추가: 자식 컴포넌트 상태 변화 감지
 watch([isPasswordValid, isMatch], ([newValid, newMatch]) => {
   // console.log(`[Parent Watch] isPasswordValid: ${newValid}, isMatch: ${newMatch}`);
 });
 
-// 비밀번호 변경 처리 함수
+// 비밀번호 변경
 const handleChangePassword = async () => {
-  // ... (기존 로직 유지)
   if (!isFormValid.value || isSubmitting.value) {
     errorMessage.value = '모든 필드를 확인하고 유효성 검사를 통과해야 합니다.';
     return;
@@ -104,13 +99,11 @@ const handleChangePassword = async () => {
     console.log('비밀번호 재설정중 에러::', res);
     if (res.code === 0) {
       alert(res.msg);
-      // successMessage.value = res.msg;
       currentPassword.value = '';
     } else if (res.code === 1004) {
       errorMessage.value = '비밀번호가 일치하지 않습니다!';
       currentPassword.value = '';
     }
-    // 자식 컴포넌트의 필드 초기화 (PasswordFields에 clearFields가 expose되어 있어야 함)
     if (passwordFieldsRef.value && passwordFieldsRef.value.clearFields) {
       passwordFieldsRef.value.clearFields();
     }

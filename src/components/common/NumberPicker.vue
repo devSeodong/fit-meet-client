@@ -62,18 +62,12 @@ const props = defineProps({
 });
 const emit = defineEmits(['update:modelValue']);
 
-// ------------------------------
-// 상태 관리
-// ------------------------------
 let dragging = false;
 let startY = 0;
 const hovered = ref(false);
 const pickerContainer = ref(null);
 
 // 초기값 설정
-// if (props.defaultValue !== null && props.modelValue === undefined) {
-//   emit('update:modelValue', props.defaultValue);
-// }
 if (
   props.defaultValue !== null &&
   (props.modelValue === undefined || props.modelValue === null)
@@ -81,9 +75,7 @@ if (
   emit('update:modelValue', props.defaultValue);
 }
 
-// ------------------------------
 // 드래그 로직 (스크롤 방지 강화)
-// ------------------------------
 function startDrag(e) {
   // 데스크톱 드래그 시작 시 이벤트 버블링 방지
   if (e.type === 'mousedown') {
@@ -121,9 +113,7 @@ function endDragHover() {
   hovered.value = false;
 }
 
-// ------------------------------
 // 휠 스크롤
-// ------------------------------
 function onWheel(e) {
   // @wheel.prevent 가 템플릿에 있지만, 로직에서도 다시 확인
   if (!hovered.value) return;
@@ -131,9 +121,7 @@ function onWheel(e) {
   updateValue(dir);
 }
 
-// ------------------------------
 // 숫자 업데이트
-// ------------------------------
 function updateValue(dir) {
   let newValue = Number((props.modelValue + props.step * dir).toFixed(2));
   if (newValue > props.max) newValue = props.max;
@@ -141,9 +129,7 @@ function updateValue(dir) {
   emit('update:modelValue', newValue);
 }
 
-// ------------------------------
 // 위/중앙/아래 숫자 계산
-// ------------------------------
 const prevValue = computed(() => {
   const v = Number((props.modelValue - props.step).toFixed(2));
   return v < props.min ? '' : v;

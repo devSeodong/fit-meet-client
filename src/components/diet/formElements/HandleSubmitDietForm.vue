@@ -75,7 +75,7 @@
 
 <script setup>
 import { ref, reactive, computed, markRaw, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router'; // 💡 useRoute 추가
+import { useRouter, useRoute } from 'vue-router'; // useRoute 추가
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
 
 import BasicInfoForm from './BasicInfoForm.vue';
@@ -85,35 +85,27 @@ import FinalReviewForm from './FinalReviewForm.vue';
 import { useDietStore } from '@/stores/Diet';
 import { useMealStore } from '@/stores/Meal';
 
-// const props = defineProps({
-//   mode: {
-//     type: String,
-//     required: true,
-//     validator: value => ['manual', 'public-api'].includes(value),
-//   },
-// });
 const props = defineProps({
   mode: {
     type: String,
     required: true,
   },
   dietId: {
-    // 💡 부모(CreateDietFormPage)로부터 전달받음
+    // 부모(CreateDietFormPage)로부터 전달받은 값
     type: String,
     default: null,
   },
 });
 
 const router = useRouter();
-const route = useRoute(); // 💡 라우트 정보 접근
+const route = useRoute();
 const dietStore = useDietStore();
 const mealStore = useMealStore();
 
-// ------------------ 1. 수정 모드 판별 ------------------
-// URL 파라미터에 dietId가 있으면 수정 모드로 간주합니다.
+// URL 파라미터에 dietId가 있으면 수정 모드로 간주 로직
 const dietId = computed(() => route.params.id);
 const isEditMode = computed(() => !!props.dietId);
-// ------------------ 2. 상태 정의 ------------------
+
 const step = ref(1);
 const isSubmitting = ref(false);
 const formKey = ref(0);
@@ -128,9 +120,8 @@ const formData = reactive({
   foods: [],
 });
 
-// ------------------ 3. 데이터 로드 (수정 모드일 때) ------------------
+// 수정모드 데이터 로드
 onMounted(async () => {
-  // route.params.id 대신 props.dietId를 사용하여 더 안전하게 체크
   if (isEditMode.value) {
     try {
       isSubmitting.value = true;
@@ -197,7 +188,7 @@ const isCurrentStepValid = computed(() => {
   return true;
 });
 
-// ------------------ 5. 최종 제출 (등록/수정 분기) ------------------
+// 최종 제출 (등록 및 수정 분기함)
 async function submitDiet() {
   if (!isCurrentStepValid.value) return;
   isSubmitting.value = true;
@@ -227,10 +218,10 @@ async function submitDiet() {
   try {
     let response;
     if (isEditMode.value) {
-      // 💡 수정 API 호출 (dietStore에 updateDiet 액션 추가 필요)
+      // 수정 API 호출
       response = await dietStore.updateDiet(dietId.value, requestBody);
     } else {
-      // 💡 생성 API 호출
+      // 생성 API 호출
       response = await dietStore.insertDiet(requestBody);
     }
 

@@ -28,10 +28,10 @@ const route = useRoute();
 // URL의 :method 파라미터 ('manual' 또는 'public-api')
 const creationMethod = computed(() => route.params.method);
 
-// URL의 :id 파라미터 (수정 시에만 존재)
+// URL의 :id 파라미터
 const dietId = computed(() => route.params.id);
 
 const goBack = () => {
-  router.back(); // 단순히 대시보드가 아니라 이전 페이지(캘린더 등)로 이동
+  router.back();
 };
 </script>

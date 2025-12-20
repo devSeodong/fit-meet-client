@@ -25,7 +25,6 @@
 
 <script setup>
 import { computed } from 'vue';
-// 임시 데이터 (실제는 API에서 가져옵니다)
 const weekDays = [
   {
     date: '12/08',
@@ -41,7 +40,6 @@ const weekDays = [
     dietCount: 3,
     isToday: false,
   },
-  // ... 중략 ...
   {
     date: '12/14',
     dayName: '토',

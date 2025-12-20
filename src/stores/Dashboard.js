@@ -11,6 +11,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const weekScoreData = ref(null);
   const monthScoreData = ref(null);
 
+  //오늘의 영양소 조회(/today-nutrition)
   const fetchTodayNutrition = async () => {
     loading.value = true;
     try {
@@ -27,7 +28,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   };
 
-  // 주간 점수 조회
+  // 주간 점수 조회(/score-week)
   const fetchWeekScore = async (
     endDate = new Date().toISOString().split('T')[0],
   ) => {
@@ -42,7 +43,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     }
   };
 
-  // 월간 점수 조회
+  // 월간 점수 조회(/score-month)
   const fetchMonthScore = async (
     year = new Date().getFullYear(),
     month = new Date().getMonth() + 1,
@@ -63,9 +64,9 @@ export const useDashboardStore = defineStore('dashboard', () => {
     const totalGoal = todayNutrition.value?.dailyKcal || 2000;
     return {
       kcal: totalGoal,
-      carb: Math.round((totalGoal * 0.5) / 4), // 50%
-      protein: Math.round((totalGoal * 0.3) / 4), // 30%
-      fat: Math.round((totalGoal * 0.2) / 9), // 20%
+      carb: Math.round((totalGoal * 0.5) / 4),
+      protein: Math.round((totalGoal * 0.3) / 4),
+      fat: Math.round((totalGoal * 0.2) / 9),
     };
   });
 

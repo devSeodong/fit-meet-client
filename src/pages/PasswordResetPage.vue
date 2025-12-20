@@ -40,44 +40,39 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useAuthStore } from '@/stores/Auth'; // Auth Store 사용
+import { useAuthStore } from '@/stores/Auth';
 
-// 1. 컴포넌트 임포트 (경로 확인)
 import PasswordResetContainer from '@/components/auth/passwordReset/PasswordResetContainer.vue'; // 경로 수정 필요
 import PasswordResetForm from '@/components/auth/passwordReset/PasswordResetEmailForm.vue'; // 경로 수정 필요
 import NewPasswordForm from '@/components/auth/passwordReset/NewPasswordForm.vue'; // 새로 만든 폼
 
-// 2. 상태 정의
 const route = useRoute();
 const store = useAuthStore();
 const resetToken = computed(() => route.query.token);
 
-// 🚨 핵심: 토큰 유효성 상태 ('pending', 'valid', 'invalid')
+// 토큰 유효성 상태 ('pending', 'valid', 'invalid')
 const tokenStatus = ref('pending');
 
-// 3. 토큰 유효성 검사 함수
+// 토큰 유효성 검사
 const validateToken = async token => {
   if (!token) return;
 
   tokenStatus.value = 'pending';
   try {
-    // 🚨 GET /validate API 호출
     const res = await store.validatePasswordReset(token);
 
     if (res.status === 200 && res.data === 'VALID') {
       tokenStatus.value = 'valid';
     } else {
-      // 200이 아니거나, 200이더라도 데이터가 'VALID'가 아닌 경우
       tokenStatus.value = 'invalid';
     }
   } catch (error) {
-    // 네트워크 오류 등 예외 발생 시 (catch 블록이 실행될 가능성은 낮지만 안전을 위해)
     console.error('Token validation failed:', error);
     tokenStatus.value = 'invalid';
   }
 };
 
-// 4. 컴포넌트 마운트 시 토큰 검사 실행
+// 컴포넌트 마운트 시 토큰 검사 실행
 onMounted(() => {
   if (resetToken.value) {
     validateToken(resetToken.value);
@@ -89,10 +84,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 대형 로딩 스피너 (spinner-lg) CSS */
 .spinner-lg {
-  border: 5px solid rgba(211, 163, 115, 0.3); /* D3A373 색상의 투명한 테두리 */
-  border-top: 5px solid #d3a373; /* D3A373 색상의 실선 테두리 */
+  border: 5px solid rgba(211, 163, 115, 0.3);
+  border-top: 5px solid #d3a373;
   border-radius: 50%;
   width: 40px;
   height: 40px;

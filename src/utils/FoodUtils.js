@@ -1,5 +1,3 @@
-// src/utils/foodUtils.js
-
 /**
  * '100mL' 또는 '150g'과 같은 servingSizeRaw 문자열에서 숫자와 단위를 추출합니다.
  */

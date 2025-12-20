@@ -33,7 +33,7 @@
       </RouterLink>
     </nav>
 
-    <!-- 🔽 하단 영역 (핵심 수정) -->
+    <!-- 하단 영역 (로그인 여부에 따른 UI변경) -->
     <div class="mt-auto">
       <div v-if="store.isLoggedIn">
         <div class="flex flex-col p-12 pt-0 text-base font-medium gap-4">
@@ -111,15 +111,6 @@ const props = defineProps({
   open: Boolean,
   close: Function,
 });
-
-//디버깅용 추후 삭제
-watch(
-  () => props.open,
-  newVal => {
-    // console.log('Sidebar Open Status:', newVal);
-  },
-  { immediate: true },
-);
 
 const store = useAuthStore();
 

@@ -92,9 +92,7 @@ const { dailyDietMap } = storeToRefs(dietStore);
 const labels = ['일', '월', '화', '수', '목', '금', '토'];
 const page = ref(0);
 
-/**
- * 💡 날짜별 식단 존재 여부 확인
- */
+//날짜별 식단 존재 여부 확인
 const hasDiet = date => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -103,7 +101,7 @@ const hasDiet = date => {
   return dailyDietMap.value[dateStr] && dailyDietMap.value[dateStr].length > 0;
 };
 
-// --- 기존 로직 동일 ---
+// 날짜 슬라이더 설정
 const allDates = computed(() => {
   const y = props.baseMonth.getFullYear();
   const m = props.baseMonth.getMonth();

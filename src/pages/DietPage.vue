@@ -1,13 +1,5 @@
 <template>
   <div class="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
-    <!-- <DateSelectorDropdown class="flex justify-end" /> -->
-    <!-- <DietWriteModal
-      v-if="isWriteModalOpen"
-      :initial-data="writeModalData"
-      @close="isWriteModalOpen = false"
-      @saved="handleDietSaved"
-      /> -->
-    <!-- <WriteDietBoardBtn /> -->
     <TodayNutritions class="h-48 p-4 sm:p-6" />
     <div
       class="flex flex-col mx-auto p-4 bg-white rounded-xl shadow-lg sm:p-6 mt-4"
@@ -26,12 +18,10 @@
           :selected-date="selectedDate"
           @select="selectedDate = $event"
         />
-        <!-- <hr v-if="viewMode === 'week'" class="border-2" /> -->
         <div
           v-if="viewMode === 'week'"
           class="relative p-px bg-linear-to-b from-gray-300 to-gray-100 shadow-sm"
         ></div>
-        <!-- <MonthlyDietView v-else :selectedMonth="selectedMonth" /> -->
         <MonthlyDietView
           v-else
           :selectedMonth="selectedMonth"
@@ -119,7 +109,7 @@ const mealLabelMap = {
   nightSnack: '야식',
 };
 
-// --- 유틸리티 함수 ---
+// 유틸리티 함수
 const formatDateToString = d => {
   if (!(d instanceof Date)) return '';
   const yyyy = d.getFullYear();
@@ -128,7 +118,7 @@ const formatDateToString = d => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
-// 💡 기간 계산 통합 함수 (중복 제거)
+// 기간 계산 통합 함수 (중복 제거)
 const getRange = (date, mode) => {
   if (mode === 'month') {
     const start = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -150,7 +140,7 @@ const getRange = (date, mode) => {
   }
 };
 
-// --- Computed ---
+// 라우터 주소 처리
 const viewMode = computed({
   get() {
     return route.query.view === 'month' ? 'month' : 'week';
@@ -190,8 +180,7 @@ const dietByMealType = computed(() => {
   return result;
 });
 
-// --- Watchers (통합 완료) ---
-// 💡 모드나 날짜 변경 시 '기간 단위'로 데이터 호출
+// 모드나 날짜 변경시 기간 단위로 데이터 호출
 watch(
   [selectedMonth, selectedDate, viewMode],
   async ([newMonth, newDate, newMode]) => {
@@ -202,16 +191,13 @@ watch(
   { immediate: true },
 );
 
-// --- Handlers ---
 const handleSelectOption = option => {
   const methodParam = option === 'manual' ? 'manual' : 'public-api';
 
-  // 💡 수정하기 로직과 이름을 동일하게 'dietForm'으로 맞춥니다.
   router.push({
-    name: 'dietForm', // 'createDiet' 대신 'dietForm' 사용
+    name: 'dietForm',
     params: {
       method: methodParam,
-      // 등록할 때는 id를 보내지 않습니다.
     },
   });
 };
@@ -229,7 +215,6 @@ const handleCalendarDateClick = async date => {
   selectedDate.value = date;
 
   const dateStr = formatDateToString(date);
-  // 이미 기간 조회를 통해 데이터가 있을 것이므로, 없을 때만 추가 호출
   if (
     !dailyDietMap.value[dateStr] ||
     dailyDietMap.value[dateStr].length === 0

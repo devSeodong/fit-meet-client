@@ -124,12 +124,10 @@
 </template>
 
 <script setup>
-// NumberPicker import가 상위 폴더로 변경되었습니다.
-import NumberPicker from '@/components/common/NumberPicker.vue';
 import { computed } from 'vue';
 
 const props = defineProps({
-  modelValue: Object, // formData 객체
+  modelValue: Object,
   isEditMode: Boolean,
 });
 
@@ -138,8 +136,6 @@ const displayGender = computed(() => {
   return props.modelValue.gender === 'MALE' ? '남성' : '여성';
 });
 
-// 성별 버튼 클래스: max-w-xs 대신 flex-1을 사용하여,
-// 부모 div (max-w-xs) 내에서 공간을 균등 분할하도록 조정했습니다.
 const genderButtonClasses = computed(() => gender => {
   const isSelected = props.modelValue.gender === gender;
   const base =

@@ -185,32 +185,29 @@ import { PlusIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 const props = defineProps(['formData']);
 const emit = defineEmits(['update:formData']);
 
-// 💡 새 음식 항목을 위한 기본 구조
 const initialNewFoodState = () => ({
   foodNmKr: '',
-  intakeGram: null, // 섭취량 (g)
-  kcal: null, // 칼로리 (Kcal)
-  carbohydrate: null, // 탄수화물 (g)
-  protein: null, // 단백질 (g)
-  fat: null, // 지방 (g)
+  intakeGram: null,
+  kcal: null,
+  carbohydrate: null,
+  protein: null,
+  fat: null,
   // 💡 사용자가 모를 경우 0으로 기본값 설정
-  sugar: 0, // 당 (g)
-  sodium: 0, // 나트륨 (mg)
-  dietaryFiber: 0, // 식이섬유 (g)
-  foodCode: null, // 수동 입력이므로 foodCode는 null
-  sourceType: 'MANUAL', // 수동 입력임을 명시
+  sugar: 0,
+  sodium: 0,
+  dietaryFiber: 0,
+  foodCode: null,
+  sourceType: 'MANUAL',
 });
 
 const newFood = reactive(initialNewFoodState());
 
-// ------------------ 계산된 속성 (Getter) ------------------
-
-// 💡 새 음식 유효성 검사
+// 새 음식 유효성 검사
 const isNewFoodValid = computed(() => {
   // 필수 항목: 음식 이름, 섭취량, 칼로리, 탄수화물, 단백질, 지방
   const isNameValid = newFood.foodNmKr && newFood.foodNmKr.trim().length > 0; // 💡 필드들이 null이 아니면서, 0 이상의 유효한 숫자인지 확인
   // 숫자 필드는 0 이상의 값만 확인
-  // 2. 필수 영양소 유효성 검사
+  // 필수 영양소 유효성 검사
   const requiredNutritionFields = [
     newFood.intakeGram,
     newFood.kcal,
@@ -220,24 +217,18 @@ const isNewFoodValid = computed(() => {
   ];
 
   const isNutritionValid = requiredNutritionFields.every(
-    (
-      field, // null이 아니어야 하고 (즉, 값이 입력되었어야 하고)
-    ) =>
-      field !== null && // 0 이상의 숫자여야 함
-      field >= 0,
+    field => field !== null && field >= 0,
   );
 
   return isNameValid && isNutritionValid;
 });
 
-// ------------------ 액션 (Action) ------------------
-
-// 💡 새 음식 추가
+// 새 음식 추가
 const addFood = () => {
   if (!isNewFoodValid.value) return;
 
-  // 1. 현재 newFood 상태의 유효한 복사본을 생성
-  //    (null을 0으로 변환하여, 백엔드 요청 바디 구조에 맞게 준비)
+  // 현재 newFood 상태의 유효한 복사본을 생성
+  // null일경우 0으로 변환
   const foodToAdd = {
     ...newFood,
     intakeGram: parseFloat(newFood.intakeGram || 0),
@@ -251,27 +242,19 @@ const addFood = () => {
     // foodCode는 이미 null, sourceType은 MANUAL
   };
 
-  // 2. 부모의 formData 업데이트 (새 음식을 기존 목록에 추가)
+  // 부모의 formData 업데이트 (새 음식을 기존 목록에 추가)
   const updatedFoods = [...props.formData.foods, foodToAdd];
   emit('update:formData', { ...props.formData, foods: updatedFoods });
 
-  // 3. 입력 폼 초기화 (새로운 참조를 할당)
+  // 입력 폼 초기화 (새로운 참조를 할당)
   Object.assign(newFood, initialNewFoodState());
 };
 
-// 💡 음식 삭제
+// 음식 삭제
 const removeFood = index => {
   const updatedFoods = props.formData.foods.filter((_, i) => i !== index);
   emit('update:formData', { ...props.formData, foods: updatedFoods });
 };
 </script>
 
-<style scoped>
-/* 💡 input-style은 BasicInfoForm 등에서 사용되는 스타일과 동일하게 가정 */
-/* .input-style {
-  @apply w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#8A8F6E] focus:border-[#8A8F6E] transition shadow-sm text-gray-700;
-}
-.input-label {
-  @apply text-base font-medium text-gray-700 block mb-1;
-} */
-</style>
+<style scoped></style>

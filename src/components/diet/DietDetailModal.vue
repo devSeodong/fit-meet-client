@@ -182,10 +182,10 @@ const formattedDate = computed(() => {
 });
 
 const handleEdit = diet => {
-  // 예: 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
+  // 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
   if (!props.diet) return;
 
-  // sourceType이 대문자일 경우를 대비해 처리
+  // DB의 SourceType은 대문자임을 감안
   const method = props.diet.sourceType === 'MANUAL' ? 'manual' : 'public-api';
 
   router.push({

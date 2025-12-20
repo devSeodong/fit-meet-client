@@ -48,7 +48,7 @@ import {
 } from '@heroicons/vue/24/outline';
 import { defineProps, defineEmits } from 'vue';
 
-// Props: 모달의 가시성 제어
+// Props모달의 가시성 제어
 const props = defineProps({
   isVisible: {
     type: Boolean,
@@ -56,12 +56,9 @@ const props = defineProps({
   },
 });
 
-// Emits: 부모 컴포넌트에 상태 변경 및 옵션 선택 전달
+// Emits로 부모 컴포넌트에 상태 변경 및 옵션 선택 전달
 const emit = defineEmits(['update:isVisible', 'selectOption']);
 
-/**
- * 모달을 닫고 부모 컴포넌트에 상태 변경을 알립니다.
- */
 const closeModal = () => {
   emit('update:isVisible', false);
 };
@@ -76,6 +73,4 @@ const selectOption = optionType => {
 };
 </script>
 
-<style scoped>
-/* Tailwind CSS를 사용하고 있으므로 별도의 스타일은 필요하지 않습니다. */
-</style>
+<style scoped></style>

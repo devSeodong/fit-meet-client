@@ -62,8 +62,6 @@ import defaultProfileImg from '@/assets/profile.png';
 import ProfileBodySection from './ProfileBodySection.vue';
 import ProfileUserSection from './ProfileUserSection.vue';
 
-// 새로 분리된 자식 컴포넌트 임포트
-
 const authStore = useAuthStore();
 const userStore = useUserStore();
 
@@ -73,19 +71,14 @@ const formData = ref({ ...userStore.healthInfo });
 const originalFormData = ref(null);
 const isEditMode = ref(false);
 
-// 프로필 사진 로직 상태 (메인에서 관리)
 const fileToUpload = ref(null);
 const currentPreviewUrl = ref(null);
 const currentProfileImage = computed(
   () => authStore.userInfo?.profileImageUrl || null,
 );
 
-// 폼 메시지
 const formMsg = ref('');
 const formMsgStatus = ref('');
-// ... (formMsgStatusClass는 사용하지 않아 제거하거나 필요 시 추가)
-
-// ------------------ 데이터 로딩 및 동기화 (메인에 유지) ------------------
 
 const loadInitialData = async () => {
   if (!userStore.healthInfo.height_cm) {
@@ -109,12 +102,10 @@ watch(
   { deep: true, immediate: true },
 );
 
-// ------------------ UI 모드 전환 및 취소 로직 (메인에 유지) ------------------
-
+// 수정 UI 토글 및 취소
 const startEditMode = () => {
   isEditMode.value = true;
   formMsg.value = '';
-  // 현재 상태를 원본에 저장
   originalFormData.value = { ...formData.value, nickname: nickname.value };
 };
 
@@ -124,15 +115,11 @@ const cancelEditMode = () => {
     formData.value = { ...originalFormData.value };
   }
   isEditMode.value = false;
-  //   formMsg.value = '수정 모드가 취소되었습니다.';
-  //   formMsgStatus.value = 'error';
-  // 이미지 관련 임시 상태도 초기화
   fileToUpload.value = null;
   currentPreviewUrl.value = null;
 };
 
-// ------------------ 프로필 사진 관련 로직 (메인에 유지) ------------------
-
+//프로필 사진 삭제
 const handleFileChange = event => {
   const file = event.target.files[0];
   if (file) {
@@ -148,7 +135,6 @@ const deleteImage = async () => {
   fileToUpload.value = null;
   currentPreviewUrl.value = null;
 
-  // 서버 삭제 로직
   if (
     authStore.userInfo?.profileImageUrl &&
     authStore.userInfo.profileImageUrl !== defaultProfileImg
@@ -185,8 +171,6 @@ const uploadProfileImage = async () => {
     formMsgStatus.value = 'error';
   }
 };
-
-// ------------------ 최종 통합 수정 로직 (메인에 유지) ------------------
 
 const submitAllUpdates = async () => {
   formMsg.value = '';
@@ -230,7 +214,7 @@ const submitAllUpdates = async () => {
 
     alert('프로필 및 신체 정보가 성공적으로 수정되었습니다.');
 
-    // 수정 완료 후 원본 데이터 갱신 및 조회 모드로 복귀
+    // 수정 완료, 조회 모드 복귀
     originalFormData.value = { ...formData.value, nickname: nickname.value };
     isEditMode.value = false;
   } catch (error) {

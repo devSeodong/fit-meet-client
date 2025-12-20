@@ -31,7 +31,6 @@
       </RouterLink>
     </div>
 
-    <!-- 버튼과 인풋 사이 간격 크게 -->
     <button
       type="submit"
       class="w-full py-3 text-white text-lg font-semibold rounded-xl orange-bg-color hover:orange-bg-color transition shadow"
@@ -53,7 +52,6 @@
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/Auth';
 import router from '@/router';
-// import { nextTick } from 'vue';
 
 const store = useAuthStore();
 
@@ -86,18 +84,14 @@ const submitLogin = async () => {
     console.log('로그인 콘솔::', res);
     if (res.code === 0) {
       alert('로그인 성공!');
-      // router.push('/');
       router.push({ name: 'dashBoard' });
     } else {
       if (res.code === 2001) {
         emailMsg.value = res.msg;
-        // await nextTick(); // DOM 업데이트 이후에 실행됨
         emailInput.value?.focus();
       } else if (res.code === 1004) {
         alert(res.msg);
 
-        // await nextTick(); // DOM 업데이트 이후에 실행됨
-        // emailInput.value?.focus(); 어차피 아래 password만 focus됨.
         passwordInput.value?.focus();
       }
     }

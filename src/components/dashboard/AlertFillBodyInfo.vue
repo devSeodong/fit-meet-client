@@ -34,8 +34,6 @@ import {
   InformationCircleIcon,
   ArrowRightIcon,
 } from '@heroicons/vue/24/outline';
-// 신체 정보 미작성 시 상단에 표시되는 알림 바입니다.
-// 버튼 클릭 시 프로필/정보 수정 페이지로 이동하는 로직이 필요합니다.
 const Mypage = () => {
   router.push({ name: 'myPage' });
 };
