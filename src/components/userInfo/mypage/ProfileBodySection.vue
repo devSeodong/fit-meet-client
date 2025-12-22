@@ -124,7 +124,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import NumberPicker from "@/components/common/NumberPicker.vue";
+import { computed } from "vue";
 
 const props = defineProps({
   modelValue: Object,
@@ -132,35 +133,35 @@ const props = defineProps({
 });
 
 const displayGender = computed(() => {
-  if (!props.modelValue.gender) return '미입력';
-  return props.modelValue.gender === 'MALE' ? '남성' : '여성';
+  if (!props.modelValue.gender) return "미입력";
+  return props.modelValue.gender === "MALE" ? "남성" : "여성";
 });
 
-const genderButtonClasses = computed(() => gender => {
+const genderButtonClasses = computed(() => (gender) => {
   const isSelected = props.modelValue.gender === gender;
   const base =
-    'px-6 py-3 rounded-xl border text-base font-medium transition flex-1';
+    "px-6 py-3 rounded-xl border text-base font-medium transition flex-1";
 
   if (isSelected) {
     return [
       base,
-      'bg-[#D3A373] text-white border-[#D3A373] hover:orange-bg-color',
+      "bg-[#D3A373] text-white border-[#D3A373] hover:orange-bg-color",
     ];
   } else {
-    return [base, 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'];
+    return [base, "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"];
   }
 });
 
 const inputBaseClass =
-  'px-4 py-3 rounded-xl border border-[#D3D7B5] outline-none transition';
-const editModeClasses = 'bg-white focus:ring-2 focus:ring-[#D3A373]';
-const viewModeClasses = 'bg-gray-100 cursor-default text-gray-700';
+  "px-4 py-3 rounded-xl border border-[#D3D7B5] outline-none transition";
+const editModeClasses = "bg-white focus:ring-2 focus:ring-[#D3A373]";
+const viewModeClasses = "bg-gray-100 cursor-default text-gray-700";
 
 const inputClasses = computed(() => {
   return [
     inputBaseClass,
     props.isEditMode ? editModeClasses : viewModeClasses,
-    !props.isEditMode && 'appearance-none',
+    !props.isEditMode && "appearance-none",
   ];
 });
 </script>
