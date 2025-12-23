@@ -46,6 +46,18 @@
           />
         </div>
 
+        <AIAnalysisList
+          :analysisList="weeklyAnalysisList"
+          @rowClick="handleAnalysisClick"
+          @deleteClick="handleDeleteAnalysis"
+        />
+
+        <AiAnalysisModal
+          :is-visible="isAnalysisModalOpen"
+          :data="selectedAnalysis"
+          @close="isAnalysisModalOpen = false"
+        />
+
         <DietDetailModal
           v-if="viewMode === 'week'"
           :is-visible="isDetailModalOpen"
@@ -71,30 +83,35 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useDietStore } from '@/stores/Diet';
-import { PlusIcon } from '@heroicons/vue/24/outline';
-import { storeToRefs } from 'pinia';
+import { ref, computed, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useDietStore } from "@/stores/Diet";
+import { PlusIcon } from "@heroicons/vue/24/outline";
+import { storeToRefs } from "pinia";
 
-import DietHeaderMonth from '@/components/diet/DietHeaderMonth.vue';
-import WeekDateSlider from '@/components/diet/WeekDateSlider.vue';
-import MonthlyDietView from '@/components/diet/MonthlyDietView.vue';
-import MealTypeTabs from '@/components/diet/MealTypeTabs.vue';
-import DietList from '@/components/diet/DietList.vue';
-import CreateDietFormOptionModal from '@/components/diet/CreateDietFormOptionModal.vue';
-import DietDetailModal from '@/components/diet/DietDetailModal.vue';
-import DietCalendarModal from '@/components/diet/DietCalendarModal.vue';
-import TodayNutritions from '@/components/dashboard/nutrition/TodayNutritions.vue';
+import DietHeaderMonth from "@/components/diet/DietHeaderMonth.vue";
+import WeekDateSlider from "@/components/diet/WeekDateSlider.vue";
+import MonthlyDietView from "@/components/diet/MonthlyDietView.vue";
+import MealTypeTabs from "@/components/diet/MealTypeTabs.vue";
+import DietList from "@/components/diet/DietList.vue";
+import CreateDietFormOptionModal from "@/components/diet/CreateDietFormOptionModal.vue";
+import DietDetailModal from "@/components/diet/DietDetailModal.vue";
+import DietCalendarModal from "@/components/diet/DietCalendarModal.vue";
+import TodayNutritions from "@/components/dashboard/nutrition/TodayNutritions.vue";
+import AIAnalysisList from "@/components/diet/AIAnalysisList.vue";
+import AiAnalysisModal from "@/components/dashboard/AiAnalysisModal.vue";
 
 const route = useRoute();
 const router = useRouter();
 const dietStore = useDietStore();
-const { dailyDietMap } = storeToRefs(dietStore);
+const { dailyDietMap, weeklyAnalysisList } = storeToRefs(dietStore);
+
+const isAnalysisModalOpen = ref(false);
+const selectedAnalysis = ref(null);
 
 const selectedMonth = ref(new Date());
 const selectedDate = ref(new Date());
-const selectedMealType = ref('breakfast');
+const selectedMealType = ref("breakfast");
 const isOptionModalVisible = ref(false);
 const isDetailModalOpen = ref(false);
 const selectedDietForDetail = ref(null);
@@ -102,25 +119,25 @@ const isCalendarModalOpen = ref(false);
 const calendarSelectedDate = ref(new Date());
 
 const mealLabelMap = {
-  breakfast: '아침',
-  lunch: '점심',
-  dinner: '저녁',
-  snack: '간식',
-  nightSnack: '야식',
+  breakfast: "아침",
+  lunch: "점심",
+  dinner: "저녁",
+  snack: "간식",
+  nightSnack: "야식",
 };
 
 // 유틸리티 함수
-const formatDateToString = d => {
-  if (!(d instanceof Date)) return '';
+const formatDateToString = (d) => {
+  if (!(d instanceof Date)) return "";
   const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 };
 
 // 기간 계산 통합 함수 (중복 제거)
 const getRange = (date, mode) => {
-  if (mode === 'month') {
+  if (mode === "month") {
     const start = new Date(date.getFullYear(), date.getMonth(), 1);
     const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     return {
@@ -143,21 +160,21 @@ const getRange = (date, mode) => {
 // 라우터 주소 처리
 const viewMode = computed({
   get() {
-    return route.query.view === 'month' ? 'month' : 'week';
+    return route.query.view === "month" ? "month" : "week";
   },
   set(mode) {
     router.replace({
-      query: { ...route.query, view: mode === 'month' ? 'month' : 'week' },
+      query: { ...route.query, view: mode === "month" ? "month" : "week" },
     });
   },
 });
 
 const selectedDateString = computed(() =>
-  formatDateToString(selectedDate.value),
+  formatDateToString(selectedDate.value)
 );
 
 const dietsOfDay = computed(
-  () => dailyDietMap.value[selectedDateString.value] || [],
+  () => dailyDietMap.value[selectedDateString.value] || []
 );
 
 const dietByMealType = computed(() => {
@@ -169,13 +186,13 @@ const dietByMealType = computed(() => {
     snack: [],
     nightSnack: [],
   };
-  diets.forEach(d => {
+  diets.forEach((d) => {
     const type = d.mealType || d.meal_type;
-    if (type === 'A') result.breakfast.push(d);
-    else if (type === 'B') result.lunch.push(d);
-    else if (type === 'C') result.dinner.push(d);
-    else if (type === 'D') result.snack.push(d);
-    else if (type === 'E') result.nightSnack.push(d);
+    if (type === "A") result.breakfast.push(d);
+    else if (type === "B") result.lunch.push(d);
+    else if (type === "C") result.dinner.push(d);
+    else if (type === "D") result.snack.push(d);
+    else if (type === "E") result.nightSnack.push(d);
   });
   return result;
 });
@@ -184,25 +201,26 @@ const dietByMealType = computed(() => {
 watch(
   [selectedMonth, selectedDate, viewMode],
   async ([newMonth, newDate, newMode]) => {
-    const baseDate = newMode === 'month' ? newMonth : newDate;
+    const baseDate = newMode === "month" ? newMonth : newDate;
     const { startDate, endDate } = getRange(baseDate, newMode);
+
     await dietStore.fetchMonthDiets(startDate, endDate);
   },
-  { immediate: true },
+  { immediate: true }
 );
 
-const handleSelectOption = option => {
-  const methodParam = option === 'manual' ? 'manual' : 'public-api';
+const handleSelectOption = (option) => {
+  const methodParam = option === "manual" ? "manual" : "public-api";
 
   router.push({
-    name: 'dietForm',
+    name: "dietForm",
     params: {
       method: methodParam,
     },
   });
 };
 
-const handleDietClick = async diet => {
+const handleDietClick = async (diet) => {
   const detail = await dietStore.fetchDietDetail(diet.dietId || diet.id);
   if (detail) {
     selectedDietForDetail.value = detail;
@@ -210,7 +228,7 @@ const handleDietClick = async diet => {
   }
 };
 
-const handleCalendarDateClick = async date => {
+const handleCalendarDateClick = async (date) => {
   calendarSelectedDate.value = date;
   selectedDate.value = date;
 
@@ -224,8 +242,26 @@ const handleCalendarDateClick = async date => {
   isCalendarModalOpen.value = true;
 };
 
-onMounted(() => {
+const handleAnalysisClick = (data) => {
+  selectedAnalysis.value = data;
+  isAnalysisModalOpen.value = true;
+};
+
+const handleDeleteAnalysis = async (logId) => {
+  if (!confirm("이 분석 보고서를 정말 삭제하시겠습니까?")) return;
+
+  try {
+    await dietStore.deleteWeeklyAnalysisLog(logId);
+    alert("삭제되었습니다.");
+  } catch (err) {
+    alert("삭제 중 오류가 발생했습니다.");
+  }
+};
+
+onMounted(async () => {
   if (!route.query.view)
-    router.replace({ query: { ...route.query, view: 'week' } });
+    router.replace({ query: { ...route.query, view: "week" } });
+
+  await dietStore.fetchWeeklyAnalysisLogs();
 });
 </script>

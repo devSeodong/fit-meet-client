@@ -130,10 +130,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { XMarkIcon } from '@heroicons/vue/24/outline';
-import { useDietStore } from '@/stores/Diet';
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { useDietStore } from "@/stores/Diet";
 
 const props = defineProps({
   isVisible: Boolean,
@@ -141,7 +141,7 @@ const props = defineProps({
   mealLabel: String,
 });
 
-defineEmits(['close']);
+defineEmits(["close"]);
 const router = useRouter();
 const dietStore = useDietStore();
 
@@ -149,14 +149,19 @@ const dietStore = useDietStore();
 const totalNutrition = computed(() => {
   const totals = { kcal: 0, carbohydrate: 0, protein: 0, fat: 0 };
   if (props.diet?.foods) {
-    props.diet.foods.forEach(f => {
+    props.diet.foods.forEach((f) => {
       totals.kcal += Number(f.kcal || 0);
       totals.carbohydrate += Number(f.carbohydrate || 0);
       totals.protein += Number(f.protein || 0);
       totals.fat += Number(f.fat || 0);
     });
   }
-  return totals;
+  return {
+    kcal: Math.round(totals.kcal), // 칼로리는 보통 정수로 표현
+    carbohydrate: Number(totals.carbohydrate.toFixed(1)),
+    protein: Number(totals.protein.toFixed(1)),
+    fat: Number(totals.fat.toFixed(1)),
+  };
 });
 
 // 비율 계산 로직
@@ -172,24 +177,24 @@ const macroRatios = computed(() => {
 });
 
 const formattedDate = computed(() => {
-  if (!props.diet?.date) return '';
-  return new Date(props.diet.date).toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
+  if (!props.diet?.date) return "";
+  return new Date(props.diet.date).toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
   });
 });
 
-const handleEdit = diet => {
+const handleEdit = (diet) => {
   // 수동 입력 식단인 경우 manual, API 검색 식단인 경우 public-api
   if (!props.diet) return;
 
   // DB의 SourceType은 대문자임을 감안
-  const method = props.diet.sourceType === 'MANUAL' ? 'manual' : 'public-api';
+  const method = props.diet.sourceType === "MANUAL" ? "manual" : "public-api";
 
   router.push({
-    name: 'dietForm',
+    name: "dietForm",
     params: {
       method: method,
       id: props.diet.id,
@@ -200,16 +205,16 @@ const handleEdit = diet => {
 const handleDelete = async () => {
   if (!props.diet?.id) return;
 
-  if (confirm('이 식단 데이터를 삭제할까요?')) {
+  if (confirm("이 식단 데이터를 삭제할까요?")) {
     try {
       // 스토어 액션 호출 (식단ID와 날짜Key 전달)
-      const dateKey = props.diet.date.split('T')[0];
+      const dateKey = props.diet.date.split("T")[0];
       await dietStore.deleteDiet(props.diet.id, dateKey);
 
-      alert('삭제 완료되었습니다.');
-      emit('close');
+      alert("삭제 완료되었습니다.");
+      emit("close");
     } catch (err) {
-      alert('삭제에 실패했습니다.');
+      alert("삭제에 실패했습니다.");
     }
   }
 };

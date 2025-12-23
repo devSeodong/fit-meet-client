@@ -14,7 +14,7 @@
           class="w-12 h-12 text-gray-400 group-hover:text-[#8A8F6E] transition-colors"
         />
         <span class="mt-2 text-sm font-medium text-gray-500"
-          >사진을 업로드하여 분석 시작</span
+          >사진을 업로드하여 AI 분석 시작</span
         >
         <input
           type="file"
@@ -45,42 +45,49 @@
     </div>
 
     <Transition name="fade">
-      <div
-        v-if="analysisResults.length > 0 && !isUploading"
-        class="p-4 bg-white rounded-xl border border-gray-100 shadow-sm"
-      >
-        <div class="flex items-center justify-between mb-3">
+      <div v-if="matchedItems.length > 0 && !isUploading" class="space-y-4">
+        <div class="flex items-center justify-between mb-1">
           <h4 class="font-bold text-gray-800 flex items-center gap-2 text-sm">
-            <SparklesIcon class="w-4 h-4 text-amber-400" /> AI 분석 결과 추천
+            <SparklesIcon class="w-4 h-4 text-amber-400" /> AI 분석 결과 (항목을
+            선택해 주세요)
           </h4>
-          <span class="text-[11px] text-gray-400 font-medium"
-            >*키워드를 클릭하여 영양정보를 확인하세요.</span
-          >
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button
-            v-for="(item, idx) in analysisResults"
-            :key="idx"
-            @click="applyAiKeyword(item.nameKo)"
-            class="px-4 py-2 rounded-full border border-amber-100 bg-amber-50 text-amber-800 text-sm font-bold hover:bg-amber-100 hover:scale-105 transition-all active:scale-95"
-          >
-            {{ item.nameKo }}
-          </button>
-        </div>
+        <AIAnalysisResultItem
+          v-for="(item, idx) in matchedItems"
+          :key="idx"
+          :item="item"
+          @add-food="handleFoodAdded"
+        />
+      </div>
+
+      <div
+        v-else-if="
+          formData.imageUrl && !isUploading && matchedItems.length === 0
+        "
+        class="text-center py-10 bg-white rounded-2xl border border-dashed border-gray-200"
+      >
+        <p class="text-gray-500 mb-4">분석된 음식 정보가 없습니다.</p>
+        <router-link
+          to="/diet/form/manual"
+          class="px-6 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200 transition"
+        >
+          직접 입력하러 가기
+        </router-link>
       </div>
     </Transition>
 
-    <div v-if="formData.foods.length > 0" class="space-y-2">
-      <h4
-        class="text-xs font-bold text-gray-400 uppercase tracking-tighter ml-1"
-      >
-        현재 등록된 식단
+    <div
+      v-if="formData.foods.length > 0"
+      class="space-y-2 pt-4 border-t border-gray-100"
+    >
+      <h4 class="text-xs font-bold text-gray-400 uppercase ml-1">
+        현재 추가된 식단
       </h4>
       <div class="flex flex-wrap gap-2">
         <div
           v-for="(food, index) in formData.foods"
           :key="index"
-          class="flex items-center gap-2 px-3 py-1.5 bg-[#8A8F6E] text-white rounded-full text-sm shadow-sm animate-in fade-in zoom-in duration-300"
+          class="flex items-center gap-2 px-3 py-1.5 bg-[#8A8F6E] text-white rounded-full text-sm shadow-sm"
         >
           <span class="font-medium">{{ food.foodNmKr }}</span>
           <span class="opacity-80 text-xs">{{ food.intakeGram }}g</span>
@@ -91,167 +98,74 @@
         </div>
       </div>
     </div>
-
-    <div v-if="formData.imageUrl && !isUploading" class="mt-2">
-      <div
-        v-if="!showManualSearch"
-        class="text-center py-4 border-t border-dashed border-gray-200"
-      >
-        <p class="text-sm text-gray-500 mb-3">찾으시는 음식이 없나요?</p>
-        <button
-          @click="showManualSearch = true"
-          class="px-6 py-2 rounded-xl bg-gray-100 text-gray-700 text-sm font-bold hover:bg-gray-200 transition-colors inline-flex items-center gap-2"
-        >
-          <MagnifyingGlassIcon class="w-4 h-4" /> 직접 검색하여 추가하기
-        </button>
-      </div>
-
-      <Transition name="slide-up">
-        <div
-          v-if="showManualSearch"
-          class="grid grid-cols-1 lg:grid-cols-1 gap-4 pt-4 border-t border-gray-200"
-        >
-          <div class="flex items-center justify-between">
-            <h4 class="font-bold text-gray-800 text-sm">음식 검색</h4>
-            <button
-              @click="showManualSearch = false"
-              class="text-xs text-gray-400 hover:underline"
-            >
-              검색창 닫기
-            </button>
-          </div>
-
-          <div
-            class="flex items-center gap-2 border border-gray-200 rounded-xl p-2 shadow-sm bg-white"
-          >
-            <input
-              type="search"
-              v-model="searchQuery"
-              placeholder="음식 이름을 입력하세요"
-              class="flex-1 p-2 outline-none text-sm"
-              @keyup.enter="performSearch"
-            />
-            <button
-              @click="performSearch"
-              class="bg-[#8A8F6E] text-white p-2.5 rounded-lg hover:bg-[#6e7256] transition"
-            >
-              <MagnifyingGlassIcon class="w-4 h-4" />
-            </button>
-          </div>
-
-          <div
-            class="border border-gray-200 rounded-xl p-4 shadow-sm bg-white overflow-hidden"
-          >
-            <div
-              v-if="isLoading"
-              class="text-center py-10 text-gray-400 text-sm italic"
-            >
-              정보를 불러오는 중...
-            </div>
-            <div
-              v-else-if="searchResults.length === 0 && searchQuery"
-              class="text-center py-10 text-gray-400 text-sm"
-            >
-              검색 결과가 없습니다.
-            </div>
-            <div v-else class="overflow-y-auto max-h-[300px] custom-scrollbar">
-              <MealSearchFoodItem
-                v-for="food in searchResults"
-                :key="food.foodCd"
-                :food="food"
-                @food-added="handleFoodAdded"
-              />
-            </div>
-          </div>
-        </div>
-      </Transition>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
-import { useDietStore } from "@/stores/Diet";
-import { useMealStore } from "@/stores/Meal";
+import { ref } from "vue";
 import axios from "axios";
-import {
-  PhotoIcon,
-  XMarkIcon,
-  SparklesIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/vue/24/solid";
-import MealSearchFoodItem from "./MealSearchFoodItem.vue";
+import { useDietStore } from "@/stores/Diet";
+import { PhotoIcon, XMarkIcon, SparklesIcon } from "@heroicons/vue/24/solid";
+import AIAnalysisResultItem from "./AIAnalysisResultItem.vue"; // 위에서 만든 컴포넌트
 
 const props = defineProps(["formData", "mode"]);
 const emit = defineEmits(["update:form-data"]);
 
 const dietStore = useDietStore();
-const mealStore = useMealStore();
-
 const isUploading = ref(false);
-const showManualSearch = ref(false); // 검색창 노출 여부
-const searchQuery = ref("");
-const analysisResults = ref([]);
+const matchedItems = ref([]);
 
-const searchResults = computed(() => mealStore.searchResults);
-const isLoading = computed(() => mealStore.isLoading);
-const debouncedSearch = mealStore.getDebouncedSearch();
-
-// 이미지 업로드 및 분석
 async function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
   isUploading.value = true;
-  analysisResults.value = []; // 이전 결과 초기화
-
-  const previewUrl = URL.createObjectURL(file);
-  emit("update:form-data", { ...props.formData, imageUrl: previewUrl });
+  matchedItems.value = [];
 
   try {
     const presign = await dietStore.getPresignedUrl(file.name);
     await axios.put(presign.uploadUrl, file, {
-      headers: { "Content-Type": file.type },
+      headers: { "Content-Type": file.type || "image/jpeg" },
     });
 
+    // 1. 부모의 formData.imageUrl 업데이트 (스캔용 이미지 저장)
     emit("update:form-data", {
       ...props.formData,
       imageUrl: presign.publicUrl,
     });
 
-    const items = await dietStore.analyzeImage(presign.publicUrl);
-    analysisResults.value = items;
+    // 2. AI 분석 요청
+    const response = await dietStore.analyzeImage(presign.publicUrl);
+    matchedItems.value = response.matchedItems || [];
   } catch (error) {
     console.error(error);
-    alert("이미지 분석에 실패했습니다. 다시 시도해주세요.");
+    alert("이미지 분석 실패");
   } finally {
     isUploading.value = false;
   }
 }
 
-// AI 키워드 클릭 시
-function applyAiKeyword(keyword) {
-  showManualSearch.value = true; // 검색 섹션 보여주기
-  searchQuery.value = keyword;
-  performSearch();
+async function handleFoodAdded(selection) {
+  try {
+    const requestArray = [
+      {
+        foodCode: selection.foodCode,
+        foodNmKr: selection.foodNmKr,
+        intakeGram: selection.intakeGram,
+        sourceType: "IMAGE",
+      },
+    ];
+
+    const responseData = await dietStore.fetchDietNutrition(requestArray);
+
+    if (responseData && responseData.foods) {
+      const updatedFoods = [...props.formData.foods, responseData.foods[0]];
+      emit("update:form-data", { ...props.formData, foods: updatedFoods });
+    }
+  } catch (error) {
+    alert("영양 정보 조회 실패");
+  }
 }
-
-const performSearch = () => {
-  mealStore.searchMeals(searchQuery.value);
-};
-
-watch(searchQuery, (newKeyword) => {
-  if (showManualSearch.value) debouncedSearch(newKeyword);
-});
-
-const handleFoodAdded = (finalFoodData) => {
-  if (!finalFoodData) return;
-  const updatedFoods = [
-    ...props.formData.foods,
-    { ...finalFoodData, sourceType: "IMAGE" },
-  ];
-  emit("update:form-data", { ...props.formData, foods: updatedFoods });
-};
 
 function removeFood(index) {
   const updatedFoods = props.formData.foods.filter((_, i) => i !== index);
@@ -259,39 +173,7 @@ function removeFood(index) {
 }
 
 function resetImage() {
-  analysisResults.value = [];
-  searchQuery.value = "";
-  showManualSearch.value = false;
-  mealStore.searchResults = [];
+  matchedItems.value = [];
   emit("update:form-data", { ...props.formData, imageUrl: "", foods: [] });
 }
 </script>
-
-<style scoped>
-.bg-olive-50 {
-  background-color: #f7f8f2;
-}
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #e5e7eb;
-  border-radius: 10px;
-}
-
-/* 애니메이션 효과 */
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.4s ease-out;
-}
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(20px);
-}
-.fade-enter-active {
-  transition: opacity 0.8s;
-}
-.fade-enter-from {
-  opacity: 0;
-}
-</style>

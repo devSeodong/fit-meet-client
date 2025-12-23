@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-60 p-6 rounded-xl shadow-lg flex flex-col justify-center gap-2 items-center text-center transition-all duration-500"
+    class="p-6 rounded-xl shadow-lg flex flex-col justify-center gap-2 items-center text-center transition-all duration-500"
     :class="dashboardStore.loading ? 'animate-pulse' : ''"
     style="
       background: linear-gradient(
@@ -24,11 +24,11 @@
       <h3 class="text-xl font-extrabold mb-1">
         <span class="text-blue-600">AI</span> 맞춤 분석
       </h3>
-      <p class="text-sm opacity-80 mb-4">
+      <p class="text-sm opacity-80 mb-3">
         {{
           dashboardStore.loading
-            ? 'AI가 식단을 정밀 분석 중입니다...'
-            : '이번 주 식단을 AI가 분석해 드립니다.'
+            ? "AI가 식단을 정밀 분석 중입니다..."
+            : "이번 주 식단을 AI가 분석해 드립니다."
         }}
       </p>
     </div>
@@ -62,20 +62,20 @@
 </template>
 
 <script setup>
-import { SparklesIcon } from '@heroicons/vue/24/solid';
-import { useDashboardStore } from '@/stores/Dashboard';
+import { SparklesIcon } from "@heroicons/vue/24/solid";
+import { useDashboardStore } from "@/stores/Dashboard";
 
 const dashboardStore = useDashboardStore();
-const emit = defineEmits(['analysis-complete']);
+const emit = defineEmits(["analysis-complete"]);
 
 const handleAnalysis = async () => {
   try {
     const result = await dashboardStore.fetchAiWeeklyAnalysis();
     if (result) {
-      emit('analysis-complete', result);
+      emit("analysis-complete", result);
     }
   } catch (err) {
-    alert('분석 중 오류가 발생했습니다.');
+    alert("분석 중 오류가 발생했습니다.");
   }
 };
 </script>

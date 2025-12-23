@@ -5,52 +5,52 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import FullCalendar from '@fullcalendar/vue3';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import { useDietStore } from '@/stores/Diet';
-import { storeToRefs } from 'pinia';
+import { computed } from "vue";
+import FullCalendar from "@fullcalendar/vue3";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { useDietStore } from "@/stores/Diet";
+import { storeToRefs } from "pinia";
 
 const dietStore = useDietStore();
 const { dailyDietMap } = storeToRefs(dietStore);
-const emit = defineEmits(['dateClick']);
+const emit = defineEmits(["dateClick"]);
 
 // 식단 기록 유무 점
 const events = computed(() => {
   return Object.keys(dailyDietMap.value)
     .filter(
-      date => dailyDietMap.value[date] && dailyDietMap.value[date].length > 0,
+      (date) => dailyDietMap.value[date] && dailyDietMap.value[date].length > 0
     )
-    .map(date => ({
+    .map((date) => ({
       start: date,
-      display: 'block',
-      classNames: ['diet-dot-event'],
+      display: "block",
+      classNames: ["diet-dot-event"],
     }));
 });
 
 // 달력 옵션을 computed로 감싸서 events 변경을 실시간 반영
 const calendarOptions = computed(() => ({
   plugins: [dayGridPlugin, interactionPlugin],
-  initialView: 'dayGridMonth',
+  initialView: "dayGridMonth",
   headerToolbar: false,
-  locale: 'ko',
-  height: 'auto',
+  locale: "ko",
+  height: "auto",
   fixedWeekCount: false,
   events: events.value,
 
-  dayCellContent: arg => {
-    return arg.dayNumberText.replace('일', '');
+  dayCellContent: (arg) => {
+    return arg.dayNumberText.replace("일", "");
   },
 
-  dateClick: info => emit('dateClick', info.date),
-  dayCellClassNames: 'cursor-pointer hover:bg-gray-50 transition-all',
+  dateClick: (info) => emit("dateClick", info.date),
+  dayCellClassNames: "cursor-pointer hover:bg-gray-50 transition-all",
 }));
 </script>
 
 <style>
 .fc-daygrid-day-frame {
-  min-height: 100px !important;
+  min-height: 140px !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: flex-start !important;

@@ -138,44 +138,44 @@ const whiteList = ["login", "signup", "passwordReset"];
 router.beforeEach(async (to, from, next) => {
   const store = useAuthStore();
 
-  if (!store.authChecked) {
-    await store.fetchBasicUserInfo();
-  }
-
-  // 인증 필요 없는 페이지 확인용
-  if (!store.isLoggedIn && !store.authChecked) {
-    await store.fetchBasicUserInfo();
-  }
-
-  // 2. 이미 로그인한 사용자가 화이트리스트(로그인, 회원가입 등) 접근 시 대시보드로 리다이렉트
-  if (whiteList.includes(to.name) && store.isLoggedIn) {
-    return next({ name: "dashBoard" });
-  }
-
-  // 3. 인증이 필요 없는 페이지(로그인, 회원가입 등)는 그냥 통과
-  if (to.meta.requiresAuth === false || whiteList.includes(to.name)) {
+  // 이미 로그인한 사용자가 화이트리스트(로그인, 회원가입 등) 접근 시 대시보드로 리다이렉트
+  if (whiteList.includes(to.name)) {
+    if (store.isLoggedIn) {
+      return next({ name: "dashBoard" });
+    }
+    // 로그인 안 된 상태면 그냥 통과 (여기서 fetchBasicUserInfo를 호출하면 안 됨)
     return next();
   }
 
-  // 로그인 상태면
+  if (!store.authChecked) {
+    try {
+      await store.fetchBasicUserInfo();
+    } catch (err) {
+      // 실패해도 catch해서 다음 로직(로그인 페이지 이동)으로 넘겨야 함
+      console.warn("인증 확인 실패");
+    }
+  }
+
+  // 인증 필요 없는 페이지 접근 시 정보가 없다면 1회 시도
+  if (!store.isLoggedIn && !store.authChecked) {
+    try {
+      await store.fetchBasicUserInfo();
+    } catch (err) {
+      // 실패 시 가만히 둠 (아래에서 로그인 체크에 걸림)
+    }
+  }
+
+  // 최종 로그인 여부 확인
   if (store.isLoggedIn) {
     return next();
+  } else {
+    // 인증 필수 페이지라면 로그인으로
+    if (to.meta.requiresAuth !== false) {
+      // alert은 인터셉터에서 띄우므로 여기서는 생략하거나 하나만 남겨야 함
+      return next({ name: "login" });
+    }
+    return next();
   }
-
-  // 새로고침 직후 (상태 복구)
-  if (store.loadingUser) {
-    const ok = await store.fetchBasicUserInfo();
-    if (ok) return next();
-  }
-
-  // 4. 인증이 필요한 페이지인데 로그인 안 되어 있으면
-  if (to.meta.requiresAuth && !store.isLoggedIn) {
-    alert("로그인이 필요하거나 세션이 만료되었습니다.");
-    return next({ name: "login" });
-  }
-
-  alert("로그인이 필요하거나 세션이 만료되었습니다.");
-  return next({ name: "login" });
 });
 
 export default router;

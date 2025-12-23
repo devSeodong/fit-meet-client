@@ -72,31 +72,31 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from "vue";
 import {
   ChevronDoubleLeftIcon,
   ChevronDoubleRightIcon,
-} from '@heroicons/vue/24/outline';
-import { useDietStore } from '@/stores/Diet';
-import { storeToRefs } from 'pinia';
+} from "@heroicons/vue/24/outline";
+import { useDietStore } from "@/stores/Diet";
+import { storeToRefs } from "pinia";
 
 const props = defineProps({
   baseMonth: Date,
   selectedDate: Date,
 });
 
-const emit = defineEmits(['select']);
+const emit = defineEmits(["select"]);
 const dietStore = useDietStore();
 const { dailyDietMap } = storeToRefs(dietStore);
 
-const labels = ['일', '월', '화', '수', '목', '금', '토'];
+const labels = ["일", "월", "화", "수", "목", "금", "토"];
 const page = ref(0);
 
 //날짜별 식단 존재 여부 확인
-const hasDiet = date => {
+const hasDiet = (date) => {
   const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
   const dateStr = `${y}-${m}-${d}`;
   return dailyDietMap.value[dateStr] && dailyDietMap.value[dateStr].length > 0;
 };
@@ -124,23 +124,55 @@ const allDates = computed(() => {
   }
   return days;
 });
+
 const visibleDates = computed(() =>
-  allDates.value.slice(page.value * 7, page.value * 7 + 7),
+  allDates.value.slice(page.value * 7, page.value * 7 + 7)
 );
+
 onMounted(() => {
   const today = new Date();
   const todayIndex = allDates.value.findIndex(
-    item => item.date.toDateString() === today.toDateString(),
+    (item) => item.date.toDateString() === today.toDateString()
   );
   if (todayIndex !== -1) page.value = Math.floor(todayIndex / 7);
 });
+
 const prev = () => {
-  if (page.value > 0) page.value--;
+  if (page.value > 0) {
+    page.value--;
+    syncSelectedDateWithPage(); // 페이지 이동 시 선택 날짜 동기화
+  }
 };
+
 const next = () => {
-  if ((page.value + 1) * 7 < allDates.value.length) page.value++;
+  if ((page.value + 1) * 7 < allDates.value.length) {
+    page.value++;
+    syncSelectedDateWithPage(); // 페이지 이동 시 선택 날짜 동기화
+  }
 };
-const isSelected = d => d.toDateString() === props.selectedDate.toDateString();
+
+// [추가] 슬라이더 페이지가 이동하면 해당 페이지의 첫 번째 날짜를 부모에게 전달
+const syncSelectedDateWithPage = () => {
+  const firstDateInPage = visibleDates.value[0].date;
+  emit("select", firstDateInPage);
+};
+
+// [추가] 부모가 외부(캘린더 모드 등)에서 날짜를 바꿨을 때 슬라이더 페이지를 맞춰주는 로직
+watch(
+  () => props.selectedDate,
+  (newDate) => {
+    const index = allDates.value.findIndex(
+      (item) => item.date.toDateString() === newDate.toDateString()
+    );
+    if (index !== -1) {
+      page.value = Math.floor(index / 7);
+    }
+  },
+  { immediate: true }
+);
+
+const isSelected = (d) =>
+  d.toDateString() === props.selectedDate.toDateString();
 </script>
 
 <style scoped></style>

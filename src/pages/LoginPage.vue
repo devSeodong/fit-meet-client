@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import LoginForm from '@/components/auth/LoginForm.vue';
-import { DotLottieVue } from '@lottiefiles/dotlottie-vue';
-import { ArrowRightIcon } from '@heroicons/vue/24/outline';
+import LoginForm from "@/components/auth/LoginForm.vue";
+import { DotLottieVue } from "@lottiefiles/dotlottie-vue";
+import { ArrowRightIcon } from "@heroicons/vue/24/outline";
 </script>

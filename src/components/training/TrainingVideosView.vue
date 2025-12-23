@@ -9,13 +9,10 @@
     </div>
   </div>
   <!-- <NavBar /> -->
-  <GoToTopBtn />
 </template>
 
 <script setup>
 import RecommendVideos from "./RecommendVideos.vue";
 import CompletedVideos from "./CompletedVideos.vue";
 import AllVideos from "./AllVideos.vue";
-import NavBar from "../community/NavBar.vue";
-import GoToTopBtn from "../common/GoToTopBtn.vue";
 </script>

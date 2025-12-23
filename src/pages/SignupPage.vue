@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { DotLottieVue } from '@lottiefiles/dotlottie-vue';
-import SignupForm from '@/components/auth/SignupForm.vue';
-import { ArrowRightIcon } from '@heroicons/vue/24/outline';
+import { DotLottieVue } from "@lottiefiles/dotlottie-vue";
+import SignupForm from "@/components/auth/SignupForm.vue";
+import { ArrowRightIcon } from "@heroicons/vue/24/outline";
 </script>

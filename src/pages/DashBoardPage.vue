@@ -9,11 +9,11 @@
 
           <TotalScores class="h-112" />
 
-          <DietCalender />
+          <!-- <DietCalender /> -->
         </div>
 
         <div class="lg:col-span-3 grid grid-cols-1 gap-6">
-          <AiAnalysisCard @analysis-complete="openAiModal" />
+          <AiAnalysisCard @analysis-complete="openAiModal" class="" />
 
           <AiAnalysisModal
             v-if="aiModalData"
@@ -22,7 +22,7 @@
             @close="isAiModalOpen = false"
           />
 
-          <MyStreak class="h-112" />
+          <MyStreak class="" />
         </div>
       </div>
 
@@ -43,41 +43,41 @@
 </template>
 
 <script setup>
-import AiAnalysisCard from '@/components/dashboard/AiAnalysisCard.vue';
-import AlertFillBodyInfo from '@/components/dashboard/AlertFillBodyInfo.vue';
-import DietCalender from '@/components/dashboard/calender/DietCalender.vue';
-import MyStreak from '@/components/dashboard/MyStreak.vue';
-import TodayNutritions from '@/components/dashboard/nutrition/TodayNutritions.vue';
-import TotalScores from '@/components/dashboard/score/TotalScores.vue';
-import CreateDietFormOptionModal from '@/components/diet/CreateDietFormOptionModal.vue';
-import { PlusIcon } from '@heroicons/vue/24/outline';
-import { ref, reactive, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/Auth';
-import AiAnalysisModal from '@/components/dashboard/AiAnalysisModal.vue';
+import AiAnalysisCard from "@/components/dashboard/AiAnalysisCard.vue";
+import AlertFillBodyInfo from "@/components/dashboard/AlertFillBodyInfo.vue";
+import DietCalender from "@/components/dashboard/calender/DietCalender.vue";
+import MyStreak from "@/components/dashboard/MyStreak.vue";
+import TodayNutritions from "@/components/dashboard/nutrition/TodayNutritions.vue";
+import TotalScores from "@/components/dashboard/score/TotalScores.vue";
+import CreateDietFormOptionModal from "@/components/diet/CreateDietFormOptionModal.vue";
+import { PlusIcon } from "@heroicons/vue/24/outline";
+import { ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/Auth";
+import AiAnalysisModal from "@/components/dashboard/AiAnalysisModal.vue";
 
 const router = useRouter();
 
 const authStore = useAuthStore();
 const isOptionModalVisible = ref(false);
 
-const handleSelectOption = option => {
+const handleSelectOption = (option) => {
   let methodParam;
 
-  if (option === 'manual') {
+  if (option === "manual") {
     // URL: /diet/form/manual
-    methodParam = 'manual';
-  } else if (option === 'public-api') {
+    methodParam = "manual";
+  } else if (option === "public-api") {
     // URL: /diet/form/public-api
-    methodParam = 'public-api';
-  } else if (option === 'image') {
+    methodParam = "public-api";
+  } else if (option === "image") {
     // URL: /diet/form/image
-    methodParam = 'image';
+    methodParam = "image";
   } else {
     return;
   }
   router.push({
-    name: 'dietForm',
+    name: "dietForm",
     params: {
       method: methodParam,
     },
@@ -87,7 +87,7 @@ const handleSelectOption = option => {
 const isAiModalOpen = ref(false);
 const aiModalData = ref(null);
 
-const openAiModal = data => {
+const openAiModal = (data) => {
   aiModalData.value = data;
   isAiModalOpen.value = true;
 };

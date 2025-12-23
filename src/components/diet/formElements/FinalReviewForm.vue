@@ -26,12 +26,7 @@
 
       <div class="flex flex-col sm:flex-row sm:items-center gap-2">
         <label class="w-24 shrink-0 font-medium text-gray-700">작성 모드</label>
-        <input
-          type="text"
-          :value="mode === 'manual' ? '직접 입력' : '음식 검색 (API)'"
-          readonly
-          class="review-input"
-        />
+        <input type="text" :value="modeLabel" readonly class="review-input" />
       </div>
 
       <div class="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -74,11 +69,7 @@
               <div class="flex items-center gap-2 mt-0.5">
                 <span class="text-xs text-gray-500">
                   출처:
-                  {{
-                    food.sourceType === 'PUBLIC_API'
-                      ? '공공데이터'
-                      : '수동 입력'
-                  }}
+                  {{ getSourceLabel(food.sourceType) }}
                 </span>
                 <span class="text-xs text-gray-300">|</span>
                 <span class="text-xs font-bold text-[#8A8F6E]">
@@ -229,15 +220,25 @@
 </template>
 
 <script setup>
-import { computed, defineEmits } from 'vue';
-import { defineProps } from 'vue';
+import { computed, defineEmits } from "vue";
+import { defineProps } from "vue";
 
 const props = defineProps({
   formData: Object,
   mode: String, // 'manual' 또는 'public-api'
 });
-const emit = defineEmits(['update:formData']);
-const isReadonly = computed(() => props.mode !== 'manual');
+const emit = defineEmits(["update:formData"]);
+
+// 1. 수정: image 모드 추가
+const modeLabels = {
+  manual: "직접 입력",
+  "public-api": "음식 검색 (API)",
+  image: "AI 이미지 분석",
+};
+
+const modeLabel = computed(() => modeLabels[props.mode] || "기타");
+
+const isReadonly = computed(() => props.mode !== "manual");
 const updateFoodField = (index, field, value) => {
   if (isReadonly.value) return; // public-api 모드에서는 수정 불가
 
@@ -253,35 +254,41 @@ const updateFoodField = (index, field, value) => {
   };
 
   // 부모 컴포넌트에 전체 formData를 업데이트 요청
-  emit('update:formData', {
+  emit("update:formData", {
     ...props.formData,
     foods: newFoods,
   });
 };
 
+const getSourceLabel = (type) => {
+  if (type === "PUBLIC_API") return "공공데이터";
+  if (type === "IMAGE") return "AI 분석";
+  return "수동 입력";
+};
+
 const mealTypes = {
-  A: '아침',
-  B: '점심',
-  C: '저녁',
-  D: '간식',
-  E: '야식',
+  A: "아침",
+  B: "점심",
+  C: "저녁",
+  D: "간식",
+  E: "야식",
 };
 
 const displayDate = computed(() => {
-  if (!props.formData.date) return '날짜 미정';
+  if (!props.formData.date) return "날짜 미정";
   const dt = new Date(props.formData.date);
-  return dt.toLocaleString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
+  return dt.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
     hour12: false,
   });
 });
 
 const mealTypeLabel = computed(
-  () => mealTypes[props.formData.mealType] || '선택 안 함',
+  () => mealTypes[props.formData.mealType] || "선택 안 함"
 );
 
 // 영양분 합계 계산 로직
@@ -294,7 +301,7 @@ const totalNutrition = computed(() => {
     // 필요하다면 다른 영양소 추후 추가(현시점은 x)
   };
   // 숫자 타입 여부 확인
-  props.formData.foods.forEach(food => {
+  props.formData.foods.forEach((food) => {
     totals.kcal += parseFloat(food.kcal || 0);
     totals.carbohydrate += parseFloat(food.carbohydrate || 0);
     totals.protein += parseFloat(food.protein || 0);
